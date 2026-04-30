@@ -31,7 +31,7 @@ No silent “future work.”
 | Version | Product posture | Release character |
 |---|---|---|
 | v0.1 | Bootstrap bundle prototype | Useful scaffold; release only if package hygiene and safety tests pass |
-| v0.2 | Setup/posture assistant baseline | First credible npm release candidate if acceptance gates pass |
+| v0.2 | Setup/posture assistant baseline | Shipped public alpha: `0.2.0-alpha.0` |
 | v0.3 | Adaptive project/context/posture assistant | Extends v0.2 with probes, phase routing, project tailoring, and evaluated context tools |
 | v0.4+ | Team/org/platform-integrated assistant | Managed config, observability, marketplace distribution, enterprise constraints |
 
@@ -200,7 +200,7 @@ Minimum tests:
 
 ### v0.2 release gates
 
-A v0.2 release candidate requires:
+A v0.2 release candidate required:
 
 - `npm test` passing;
 - smoke tests passing;
@@ -213,8 +213,8 @@ A v0.2 release candidate requires:
 - `CODEX_UPLIFT_ROADMAP.md` updated;
 - `.codex-uplift/release-candidate-review.md` created;
 - manual approval before npm publish, git tag, GitHub release, or remote push.
-- recommended alpha version documented as `0.2.0-alpha.0` while
-  `package.json` stays `0.1.0` until manual approval.
+
+These gates passed for the approved `0.2.0-alpha.0` public alpha.
 
 ### Late orchestration recovery gate
 
@@ -222,7 +222,20 @@ Before v0.2 release approval, ensure missing orchestration/worktree docs are add
 
 ### v0.2 implementation status on 2026-04-30
 
-Status: release-candidate implementation prepared after late orchestration recovery; manual release decision pending.
+Status: shipped public alpha.
+
+Release facts:
+
+- version: `0.2.0-alpha.0`;
+- release commit/tag target:
+  `82eacb30e26a9db42fff3ca39fbb10173fdc4a92`;
+- GitHub Release:
+  <https://github.com/loganrooks/codex-uplift-kit/releases/tag/v0.2.0-alpha.0>;
+- npm package: `codex-uplift-kit@0.2.0-alpha.0`;
+- npm dist-tags observed: `alpha` and `latest` both point to
+  `0.2.0-alpha.0` because no stable release exists yet;
+- trusted publishing configured for future releases, but not exercised for this
+  already-published manual alpha.
 
 Implemented in the local package:
 
@@ -269,17 +282,15 @@ Recovery gate status:
 - public docs consistency pass complete;
 - verification rerun after recovery patches.
 
-Manual gates still pending:
+Manual gates still pending for future work:
 
-- package version bump from `0.1.0` to the approved v0.2 release version;
-- recommended alpha version is `0.2.0-alpha.0`;
-- npm publish;
-- first manual npm publish and npm trusted publisher setup;
-- git tag;
-- remote push;
-- first GitHub-hosted CI observation;
-- live Codex plugin restart/install verification if desired before stable
-  release.
+- any later version bump;
+- any later npm publish;
+- any later git tag, remote push, or GitHub release;
+- live Codex plugin restart/install verification before stable release
+  messaging;
+- real user-home install;
+- v0.3 implementation.
 
 Residual caveat:
 

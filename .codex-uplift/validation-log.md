@@ -166,7 +166,8 @@ Date: 2026-04-30
 - Added CI workflow for push/pull_request to `main`, low `contents: read` permissions, and Node 18/20/22 matrix.
 - Updated README with implemented command surface, alpha gate status, manual gates, and candidate-only safety boundaries.
 - Verified `npm run release:check` locally: `npm test`, `npm run smoke`, `npm run verify`, `npm run pack:dry-run`, and `git diff --check` passed.
-- Recommended release version is now documented as `0.2.0-alpha.0`; `package.json` remains `0.1.0` until manual release approval.
+- Recommended release version was documented as `0.2.0-alpha.0`; that version
+  has now shipped.
 - Recovery folder disposition at that worker boundary: applied and retained for
   provenance, with cleanup scheduled for the orchestrator after capture.
 
@@ -217,3 +218,34 @@ Date: 2026-04-30
   `.github/workflows/publish-npm.yml`.
 - Not run: live GitHub Release-triggered publish workflow; requires first manual
   npm publish and npm-side trusted publisher setup.
+
+## v0.2 Alpha Closeout And Published-Package Feedback
+
+- Verified published package version:
+  `npm view codex-uplift-kit@0.2.0-alpha.0 version` returned
+  `0.2.0-alpha.0`.
+- Verified npm dist-tags:
+  `alpha: 0.2.0-alpha.0` and `latest: 0.2.0-alpha.0`.
+- Verified published CLI help through
+  `npx --yes --package codex-uplift-kit@alpha codex-uplift-init --help`.
+- Verified published package against temp homes only:
+  - `inspect` reports missing temp homes and safe install modes.
+  - `install --dry-run` reports classic-mode writes without mutating temp homes.
+  - `install --mode plugin` writes home agents, agents, config/hook/rule
+    candidates, plugin payload, marketplace metadata, and manifest under temp
+    homes.
+  - `config candidate --profile safe-interactive` writes an inactive candidate.
+  - `compact candidate` writes six prompt candidates, README, and inactive
+    config fragment without creating or modifying active `config.toml`.
+  - `status` reports manifest-owned files as present.
+  - `uninstall --dry-run` lists package-owned files that would be removed.
+- Verified immutable release facts:
+  - version: `0.2.0-alpha.0`;
+  - commit/tag target:
+    `82eacb30e26a9db42fff3ca39fbb10173fdc4a92`;
+  - GitHub Release:
+    <https://github.com/loganrooks/codex-uplift-kit/releases/tag/v0.2.0-alpha.0>;
+  - GitHub Release is marked prerelease;
+  - GitHub CI passed on `main`;
+  - trusted publishing is configured for future releases but was not exercised
+    for this already-published manual alpha.

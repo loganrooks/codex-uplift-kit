@@ -6,9 +6,29 @@ Subject: Manual release checkpoint for `codex-uplift-kit` v0.2
 
 ## 0. Purpose
 
-This checklist defines what the orchestrator must produce before the user decides whether to publish a v0.2 release.
+This checklist defined what the orchestrator had to produce before the user
+decided whether to publish a v0.2 release. It is now closed for
+`0.2.0-alpha.0` and remains useful as the release discipline template for
+future versions.
 
-The orchestrator may prepare this checkpoint automatically. It must not publish, tag, or push a release without explicit user approval.
+The orchestrator prepared this checkpoint automatically, then release actions
+were performed after explicit approval. Future publish, tag, push, release, or
+real user-home install actions still require explicit approval.
+
+## 0.1 Closed Alpha Release Facts
+
+- Version: `0.2.0-alpha.0`.
+- Release commit/tag target:
+  `82eacb30e26a9db42fff3ca39fbb10173fdc4a92`.
+- GitHub Release:
+  <https://github.com/loganrooks/codex-uplift-kit/releases/tag/v0.2.0-alpha.0>.
+- npm package: `codex-uplift-kit@0.2.0-alpha.0`.
+- npm dist-tags observed after publish: `alpha` and `latest` both point to
+  `0.2.0-alpha.0` because no stable version exists yet.
+- Trusted publishing is configured for future releases, but it was not
+  exercised for this already-published manual alpha.
+- Published-package smoke results are captured in
+  `.codex-uplift/v0.2-release-feedback.md`.
 
 ## 1. Required release-candidate artifact
 
@@ -159,7 +179,8 @@ Boundary:
 
 ## 9. Release commands — manual only
 
-Do not run these unless the user approves at the checkpoint:
+For future releases, do not run these unless the user approves at the
+checkpoint:
 
 ```bash
 git status --short
@@ -176,8 +197,8 @@ If GitHub release automation is desired, prepare a draft release note first and 
 
 ## 9.1 Trusted publishing workflow
 
-After the first manual npm publish creates the package on npm, configure npm
-trusted publishing with:
+After the first manual npm publish created the package on npm, npm trusted
+publishing was configured with:
 
 - Publisher: GitHub Actions
 - Owner/user: `loganrooks`
@@ -188,13 +209,17 @@ The workflow publishes only from GitHub Release `published` events, requires
 OIDC `id-token: write`, rejects non-`v` tags, rejects package/tag version
 mismatches, and rejects stable releases until that gate is explicitly revised.
 
+For `0.2.0-alpha.0`, this workflow was not exercised because the package was
+already manually published before trusted publishing was configured.
+
 ## 10. User release decision
 
-The release checkpoint should end with one of these options:
+Future release checkpoints should end with one of these options:
 
 - `ship v0.2.0` — publish stable.
 - `ship v0.2.0-alpha.N` — publish prerelease. Current recommended alpha is `0.2.0-alpha.0`.
 - `hold` — do not publish; list blockers.
 - `revise` — continue implementation; list next slice.
 
-The orchestrator must not choose the release decision alone.
+The v0.2 checkpoint ended in `ship-alpha` and the alpha has shipped. The
+orchestrator must not choose future release decisions alone.

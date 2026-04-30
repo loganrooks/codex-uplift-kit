@@ -1,25 +1,39 @@
 ---
 artifact_id: codex-uplift-v0.2-release-candidate-review
 artifact_type: release-checkpoint
-status: draft
-summary: Manual release checkpoint for the v0.2 setup/posture assistant baseline.
+status: shipped
+summary: Closed release checkpoint for the shipped v0.2 setup/posture assistant alpha.
 ---
 
 # Release Candidate Review
 
 Date: 2026-04-30
 
-## Proposed Version
+## Released Version
 
-Recommended alpha release version after manual approval: `0.2.0-alpha.0`.
+Released alpha version: `0.2.0-alpha.0`.
 
-Current `package.json` version: `0.1.0`.
+Release commit/tag target: `82eacb30e26a9db42fff3ca39fbb10173fdc4a92`.
 
-Version bump is intentionally not performed here because `npm version <version>` is a manual release-gate step.
+GitHub Release: <https://github.com/loganrooks/codex-uplift-kit/releases/tag/v0.2.0-alpha.0>.
+
+npm package: `codex-uplift-kit@0.2.0-alpha.0`.
+
+npm dist-tags observed after publish:
+
+- `alpha: 0.2.0-alpha.0`
+- `latest: 0.2.0-alpha.0`
+
+`latest` points to the alpha because no stable release exists yet. Trusted
+publishing is configured for future GitHub Release-triggered publishes, but it
+was not exercised for this already-published manual alpha.
 
 ## Working Tree State
 
-Working tree contains the v0.2 release-candidate implementation and release artifacts. Commit hash before final implementation commit: `3c5fd69`.
+The release was shipped from commit `82eacb3` and tag
+`v0.2.0-alpha.0`, both resolving to
+`82eacb30e26a9db42fff3ca39fbb10173fdc4a92`. `main` was clean and synced with
+`origin/main` before closeout documentation began.
 
 ## Files Changed
 
@@ -97,6 +111,18 @@ Working tree contains the v0.2 release-candidate implementation and release arti
 
 ## Tests Run
 
+- PASS `npm view codex-uplift-kit@0.2.0-alpha.0 version` —
+  `0.2.0-alpha.0`.
+- PASS `npm dist-tag ls codex-uplift-kit` — `alpha` and `latest` both point to
+  `0.2.0-alpha.0`.
+- PASS `npx --yes --package codex-uplift-kit@alpha codex-uplift-init --help`.
+- PASS published-package temp-home `inspect`.
+- PASS published-package temp-home `install --dry-run`.
+- PASS published-package temp-home `install --mode plugin`.
+- PASS published-package temp-home `config candidate --profile safe-interactive`.
+- PASS published-package temp-home `compact candidate`.
+- PASS published-package temp-home `status`.
+- PASS published-package temp-home `uninstall --dry-run`.
 - PASS `npm test` — 23 tests.
 - PASS `npm run smoke`.
 - PASS `node bin/codex-uplift-init.mjs --help`.
@@ -124,13 +150,14 @@ Working tree contains the v0.2 release-candidate implementation and release arti
 - No live hooks/rules enablement was run.
 - No RTK install/evaluation was run.
 - No cross-platform Windows/Linux matrix was run.
-- No live GitHub Release-triggered publish workflow was run.
-- No npm trusted publisher was configured yet; first manual npm publish is still
-  required before trusted publishing can be enabled.
+- No live GitHub Release-triggered publish workflow was run for
+  `0.2.0-alpha.0` because that version was already manually published.
+- Trusted publishing has been configured, but remains unexercised until a
+  future release.
 
 ## Package Contents Summary
 
-`npm run pack:dry-run` reported 34 files, package size about 26.5 kB, unpacked size about 94.1 kB. Contents include bin, templates, compaction prompt templates, README, RELEASE, CHANGELOG, SECURITY, LICENSE, and orchestrator prompts. `.DS_Store`, `.planning`, `.codex-uplift`, recovery-package files, archives, and temp files were not included in the tarball.
+`npm run pack:dry-run` reported 34 files, package size about 26.5 kB, unpacked size about 94.3 kB after closeout docs. Contents include bin, templates, compaction prompt templates, README, RELEASE, CHANGELOG, SECURITY, LICENSE, and orchestrator prompts. `.DS_Store`, `.planning`, `.codex-uplift`, recovery-package files, archives, and temp files were not included in the tarball.
 
 ## Install And Uninstall Verification
 
@@ -154,10 +181,14 @@ Working tree contains the v0.2 release-candidate implementation and release arti
 
 ## Known Risks
 
-- Package version remains `0.1.0` until the manual release version bump.
-- Public CI/release gate files were added for alpha hardening; CI execution on GitHub has not yet run in this local pass.
-- npm trusted publishing workflow has been added, but it cannot be exercised
-  until after first manual npm publish and npm-side trusted publisher setup.
+- `latest` points to `0.2.0-alpha.0` because npm assigns `latest` when there is
+  no stable version yet; this is acceptable for the first alpha but should be
+  revisited before any broader stable messaging.
+- GitHub CI passed on `main`; the release-triggered npm publish workflow has
+  not yet been exercised.
+- npm trusted publishing workflow has been added and npm-side trusted publisher
+  setup is configured, but it will first run on a future published GitHub
+  Release.
 - Candidate-only project/rules/hooks commands are minimal seam implementations;
   `compact candidate` now generates reviewable prompt candidates and an inactive
   config fragment.
@@ -167,16 +198,22 @@ Working tree contains the v0.2 release-candidate implementation and release arti
 
 ## Manual Gates Still Closed
 
-Do not run the version bump to `0.2.0-alpha.0`, npm publish, npm trusted
-publisher activation, git tag, remote push, GitHub release creation, real
-user-home install, active hook/rule enablement, full-access profile activation,
-telemetry enablement, RTK activation, or v0.3 implementation without explicit
-user approval.
+Do not run another version bump, npm publish, git tag, remote push, GitHub
+release creation, real user-home install, active hook/rule enablement,
+full-access profile activation, telemetry enablement, RTK activation, or v0.3
+implementation without explicit user approval.
 
 ## Release Recommendation
 
-Status: release candidate acceptable after patches.
+Status: shipped alpha closed.
 
-Recommendation: `ship-alpha`.
+Recommendation: `shipped-alpha`.
 
-Rationale: late orchestration recovery found and fixed material config/posture candidate mismatches. v0.2 now has the setup-assistant baseline, safety tests, profile-candidate content tests, manifest/status/uninstall, corrected plugin/duplicate behavior, release quality gates, trusted-publisher workflow preparation, and reconciled orchestration provenance. Keep alpha posture until a live Codex plugin install/restart check, GitHub CI observation, npm trusted publisher setup, and manual package version bump are approved.
+Rationale: late orchestration recovery found and fixed material config/posture
+candidate mismatches. v0.2 shipped with the setup-assistant baseline, safety
+tests, profile-candidate content tests, manifest/status/uninstall, corrected
+plugin/duplicate behavior, release quality gates, trusted-publisher workflow
+preparation, reconciled orchestration provenance, a prerelease GitHub Release,
+and a published npm alpha. Keep alpha posture until live Codex plugin
+install/restart checks and future trusted-publishing release automation are
+exercised.

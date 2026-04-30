@@ -77,7 +77,8 @@ Planned release-candidate verification:
 - Added GitHub Actions CI gate for push/pull_request to `main` on Node 18, 20, and 22.
 - CI gate runs `npm test`, `npm run smoke`, `npm run verify`, `npm run pack:dry-run`, and `git diff --check`.
 - PASS `npm run release:check` — 16 tests, smoke, verify, pack dry run, and `git diff --check` passed.
-- Recommended alpha release version documented as `0.2.0-alpha.0`; package version remains `0.1.0` pending manual gate.
+- Recommended alpha release version documented as `0.2.0-alpha.0`; that
+  version has now shipped.
 - GitHub-hosted CI has not yet run in this local worker pass.
 
 2026-04-30 release hardening final integration:
@@ -110,6 +111,26 @@ Planned release-candidate verification:
 - Regenerated planning `MANIFEST.md` after prompt restoration and recovery
   cleanup.
 
+2026-04-30 published alpha closeout:
+
+- PASS `npm view codex-uplift-kit@0.2.0-alpha.0 version` —
+  `0.2.0-alpha.0`.
+- PASS `npm dist-tag ls codex-uplift-kit` — `alpha` and `latest` both point to
+  `0.2.0-alpha.0` because no stable release exists yet.
+- PASS `npx --yes --package codex-uplift-kit@alpha codex-uplift-init --help`.
+- PASS published-package temp-home `inspect`.
+- PASS published-package temp-home `install --dry-run`.
+- PASS published-package temp-home `install --mode plugin`.
+- PASS published-package temp-home `config candidate --profile safe-interactive`.
+- PASS published-package temp-home `compact candidate`.
+- PASS published-package temp-home `status`.
+- PASS published-package temp-home `uninstall --dry-run`.
+- PASS `npm run release:check` after closeout docs — 23 tests, smoke, verify,
+  pack dry-run, and `git diff --check`; package payload remains 34 files,
+  package size about 26.5 kB, unpacked size about 94.3 kB.
+- Closeout note: trusted publishing has been configured for future releases but
+  was not exercised for `0.2.0-alpha.0`, which was already manually published.
+
 ## Notes
 
 - `npm run pack:dry-run` uses `/tmp/codex-uplift-npm-cache` and
@@ -118,10 +139,10 @@ Planned release-candidate verification:
   --dry-run` and `npm publish --dry-run` checks used
   `/private/tmp/codex-uplift-npm-cache` because the default npm cache had
   ownership issues in this environment.
-- The package version remains `0.1.0`; `npm version <version>` is a manual release-gate command in the release checkpoint.
+- The package version is now `0.2.0-alpha.0`; future version bumps remain
+  manual release-gate commands.
 - Late recovery did not run a real user-home install, live hook/rule enablement, git tag, remote push, or npm publish.
-- Trusted publishing workflow execution was not run locally; it requires a
-  pushed workflow, first manual npm publish, npm trusted publisher setup, and a
-  published GitHub Release.
+- Trusted publishing workflow execution was not run for `0.2.0-alpha.0`; it is
+  configured for a future published GitHub Release.
 - The recovery package has been applied, captured in parent planning and
   repo-local `.codex-uplift/` artifacts, and removed after capture.

@@ -3,12 +3,12 @@
 All notable changes to `codex-uplift-kit` will be recorded here.
 
 This project uses prerelease alpha checkpoints while the setup/posture assistant
-surface hardens. The current package version remains `0.1.0` until the manual
-release gate approves a version bump.
+surface hardens. The current published package is `0.2.0-alpha.0`.
 
-## 0.2.0-alpha.0 - Recommended, Unreleased
+## 0.2.0-alpha.0 - 2026-04-30
 
-Recommended prerelease version after manual approval: `0.2.0-alpha.0`.
+Published prerelease alpha. GitHub Release:
+<https://github.com/loganrooks/codex-uplift-kit/releases/tag/v0.2.0-alpha.0>.
 
 ### Added
 
@@ -33,11 +33,13 @@ Recommended prerelease version after manual approval: `0.2.0-alpha.0`.
 
 ### Safety
 
-- Package version is intentionally still `0.1.0` until an explicit manual
-  version-bump gate runs.
+- npm dist-tags currently map both `alpha` and `latest` to
+  `0.2.0-alpha.0` because no stable release exists yet.
+- Trusted publishing is configured for future releases, but was not exercised
+  for this already-published manual alpha.
 - Hooks, rules, full-access profile activation, RTK integration, telemetry,
-  npm publish, git tags, remote push, and real user-home mutation remain manual
-  gates.
+  future npm publishes, future git tags, remote pushes, and real user-home
+  mutation remain manual gates.
 
 ## 0.1.0 - Bootstrap Baseline
 

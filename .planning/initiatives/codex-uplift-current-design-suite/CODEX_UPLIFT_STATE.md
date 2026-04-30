@@ -19,8 +19,8 @@ Do not confuse the planning suite with the package payload.
 
 ## 0.1 Implementation update
 
-As of the 2026-04-30 v0.2 implementation pass, the package has a local
-release-candidate implementation of the setup/posture assistant baseline.
+As of the 2026-04-30 closeout pass, the package has shipped the
+`0.2.0-alpha.0` setup/posture assistant baseline.
 
 Implemented:
 
@@ -41,12 +41,21 @@ Implemented:
 - `verify`;
 - safety-critical `npm test` coverage.
 
-Not yet released:
+Released alpha facts:
 
-- `package.json` still declares `0.1.0`;
-- no npm publish, git tag, remote push, or real user-home install has been performed;
-- recommended alpha version is `0.2.0-alpha.0`, pending manual version-bump approval;
-- `.codex-uplift/release-candidate-review.md` records the manual release checkpoint.
+- `package.json` declares `0.2.0-alpha.0`;
+- release commit/tag target is
+  `82eacb30e26a9db42fff3ca39fbb10173fdc4a92`;
+- GitHub Release exists and is marked prerelease:
+  <https://github.com/loganrooks/codex-uplift-kit/releases/tag/v0.2.0-alpha.0>;
+- npm package `codex-uplift-kit@0.2.0-alpha.0` is published;
+- npm dist-tags observed: `alpha` and `latest` both point to
+  `0.2.0-alpha.0` because no stable release exists yet;
+- trusted publishing is configured for future releases, but was not exercised
+  for this already-published manual alpha;
+- `.codex-uplift/release-candidate-review.md` is closed as shipped;
+- `.codex-uplift/v0.2-release-feedback.md` records the published-package smoke
+  loop and v0.3 inputs.
 
 ## 0.2 Late orchestration recovery status
 
@@ -64,7 +73,9 @@ Required follow-up:
 - added public repository hygiene files and release quality gates;
 - reran verification after hardening patches.
 
-Release impact: the recovery pass found and fixed a material config/posture candidate mismatch. The v0.2 alpha candidate is prepared after late orchestration recovery; manual release decision pending.
+Release impact: the recovery pass found and fixed a material config/posture
+candidate mismatch before alpha publication. The v0.2 alpha is now shipped and
+closed; v0.3 roadmap drafting is the next planning step.
 
 Recovery folder disposition: applied, copied into the parent planning suite
 where relevant, captured in repo-local `.codex-uplift/` artifacts, and removed
@@ -135,7 +146,7 @@ This does not mean v0.2 implements all future capabilities. It means v0.2 must e
 
 ## 4. Current active initiative
 
-Active initiative:
+Recently closed initiative:
 
 ```text
 v0.2 setup/posture assistant baseline
@@ -179,28 +190,32 @@ During implementation, keep these current:
 If any of these are intentionally not created, record why in `.codex-uplift/v0.2-deferral-check.md`.
 
 Current status: all required pre-implementation artifacts, change/test logs,
-release-candidate review, and v0.3 handoff have been created.
+release-candidate review, release feedback artifact, and v0.3 handoff have
+been created.
 
 ## 6. Manual checkpoint requirement
 
-The orchestrator may implement toward a v0.2 release candidate automatically under `CODEX_UPLIFT_AUTORUN_CONTRACT.md`.
+The orchestrator implemented and shipped the approved v0.2 alpha under
+explicit release gates.
 
-The orchestrator must not automatically:
+The orchestrator must still not automatically:
 
 - publish to npm;
 - create a public GitHub release;
 - push tags to a remote;
 - enable hooks/rules/full-access profiles in a user's real home config;
 - delete existing user config;
-- claim v0.2 is released.
+- start v0.3 implementation.
 
-At the end of v0.2 implementation, produce:
+At the end of v0.2 implementation, the release checkpoint was produced and
+closed:
 
 ```text
 .codex-uplift/release-candidate-review.md
 ```
 
-Then wait for explicit user approval before npm publish, git release, remote push, or moving to v0.3 implementation.
+Future npm publishes, git releases, remote pushes, real user-home installs, and
+v0.3 implementation still require explicit user approval.
 
 ## 7. Context-efficiency state
 
@@ -251,6 +266,7 @@ Unresolved answers must be recorded; they must not be guessed into code silently
 - Release quality gates now include `npm run verify`, `npm run pack:dry-run`,
   `npm run release:check`, GitHub Actions CI on Node 18/20/22, and
   `git diff --check`.
-- GitHub Release-triggered npm trusted publishing is prepared for alpha
-  releases, but first manual npm publish and npm-side trusted publisher setup
-  remain manual gates.
+- GitHub Release-triggered npm trusted publishing is prepared and npm-side
+  trusted publishing is configured for future alpha releases. It was not
+  exercised for `0.2.0-alpha.0` because that version was already manually
+  published.
