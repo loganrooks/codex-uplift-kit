@@ -83,8 +83,13 @@ non-destructive probe instead of asserting it from memory.
 - `templates/plugin/skills/` mirrors plugin-packaged skills.
 - `templates/agents/` contains custom agent templates.
 - `templates/hooks/` contains inactive hook samples.
+- `.planning/README.md` is the read-first planning control plane.
+- `.planning/current/` contains current state, vision, roadmap, active work, and
+  release boundaries.
+- `.planning/governance/` contains workflow and artifact authority rules.
 - `.planning/initiatives/codex-uplift-current-design-suite/` contains the v0.2
-  design suite and review responses.
+  design suite and review responses. Treat it as historical evidence unless a
+  current doc promotes a specific item.
 
 Keep the home template portable. Put repo-specific commands, failure modes, and
 implementation constraints in this project file or planning artifacts.
@@ -122,9 +127,14 @@ state that the test suite is not present.
 ## Planning And Artifacts
 
 - Read `~/.gsd/knowledge/index.md` before starting substantive work.
+- For substantive project work, read `.planning/README.md`, then
+  `.planning/current/STATE.md`, `.planning/current/ACTIVE_WORK.md`, and
+  `.planning/governance/README.md`.
 - Preserve design decisions and review responses under `.planning/`.
 - Separate implementation defects, setup-assistant requirements,
   platform-modeling corrections, and empirical unknowns.
+- Treat `.planning/work/_scratch/` as temporary continuity material, not current
+  authority.
 - For substantial changes, record verification and boundaries in the relevant
   planning artifact or commit message.
 
