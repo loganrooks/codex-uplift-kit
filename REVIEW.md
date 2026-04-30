@@ -2,6 +2,8 @@
 
 Date: 2026-04-30
 
+Amendment: later Worker C docs updates keep this as a review artifact but supersede stale wording that described Codex hooks as experimental-only, required users to enable `features.codex_hooks` in all cases, or preferred absolute plugin marketplace paths before verifying current plugin path semantics. Treat those points below as historical review notes unless repeated in the amendment sections.
+
 ## Scope
 
 This review covers the current `codex-uplift-kit` package as an npm-distributable setup kit for improving local Codex usage through:
@@ -58,7 +60,7 @@ The main gaps are not in the basic installer mechanics. They are in the surround
 - existing installs need a richer inventory/merge strategy;
 - plugin install behavior may create duplicate skills or broken marketplace paths;
 - the test suite does not yet assert the safety-critical installer behavior;
-- hooks are valid Codex hooks, but the package should document their experimental and incomplete enforcement boundary.
+- hooks are valid Codex lifecycle guardrails, but the package should document their incomplete enforcement boundary.
 
 ## Strengths
 
@@ -76,7 +78,7 @@ The package emphasizes durable plans, rationales, verification logs, handoffs, a
 
 ### Hooks Are Optional By Default
 
-The package installs `hooks.json.sample` and does not enable hooks or edit `config.toml` automatically. That is a good boundary, especially while hooks are experimental.
+The package installs `hooks.json.sample` and does not promote it to an active hook layer or edit `config.toml` automatically. That is a good boundary because sample hooks should be inspected before use.
 
 ## Findings
 
@@ -182,6 +184,8 @@ Recommended action:
 
 ### [MEDIUM] Plugin Marketplace Path Is Not Verified Against Install Location
 
+Amendment: do not treat “generate an absolute local path” as the preferred fix until current plugin marketplace path semantics are verified against official Codex docs or a non-destructive probe. The safer v0.2 requirement is to generate metadata from the actual chosen install location and verify that Codex resolves it to the copied plugin directory.
+
 File: `bin/codex-uplift-init.mjs` lines 156-160  
 Related file: `templates/plugin-marketplace/marketplace.json`
 
@@ -207,9 +211,9 @@ Unless the plugin manager resolves that relative path from the Codex home, the m
 
 Recommendation:
 
-- Generate an absolute local path from `codexHome`, or
-- place marketplace metadata where the relative path is guaranteed to resolve, or
-- add a smoke test that installs to temp homes and verifies the marketplace entry resolves to the copied plugin directory.
+- generate marketplace metadata from the selected install location;
+- verify the entry resolves to the copied plugin directory in temp homes;
+- only switch to absolute paths if the current official plugin path semantics require it.
 
 ### [MEDIUM] Plugin Install Mode Can Duplicate Skill Names
 
@@ -276,6 +280,8 @@ Ignore known system files during recursive copy, or use a template allowlist.
 
 ### [LOW] Hooks Are Valid, But Documentation Should Clarify Their Boundary
 
+Amendment: the stale wording below says hooks are experimental and always require `[features] codex_hooks = true`. Current docs/template wording should avoid that blanket instruction. The retained finding is the boundary claim: hook samples are inactive until promoted, and hooks are guardrails rather than a complete security boundary.
+
 Files:
 
 - `templates/hooks/hooks.json.sample`
@@ -283,21 +289,20 @@ Files:
 - `templates/hooks/stop-audit-shape.mjs`
 - `README.md`
 
-The earlier concern that these hooks were not Codex-ready should be withdrawn. The current OpenAI docs confirm:
+The earlier concern that these hooks were not Codex-ready should be withdrawn. The current OpenAI docs and local templates should be checked for:
 
-- hooks are enabled with `[features] codex_hooks = true`;
 - Codex looks for `hooks.json` next to active config layers;
 - `PreToolUse` supports the `hookSpecificOutput.permissionDecision = "deny"` shape used by `pretool-protect-git.mjs`;
 - `Stop` can block/continue a turn.
 
-The package should still document the official limitation: `PreToolUse` is a guardrail, not a complete enforcement boundary. It does not intercept every possible tool path, and multiple matching hooks can run.
+The package should still document the key limitation: `PreToolUse` is a guardrail, not a complete enforcement boundary. It does not intercept every possible risk path, and multiple matching hooks can run.
 
 Recommendation:
 
 Update the README hook section to say:
 
 ```text
-Hooks are experimental Codex guardrails. They can reduce risk, but they are not a complete security boundary. Keep sandbox and approval settings conservative even when hooks are enabled.
+Hooks are Codex lifecycle guardrails. They can reduce risk, but they are not a complete security boundary. Keep sandbox and approval settings conservative even when hooks are enabled.
 ```
 
 Also consider adding a `PermissionRequest` hook sample because that event is better aligned with approval policy control than trying to catch everything in `PreToolUse`.
@@ -344,7 +349,7 @@ Suggested scripts:
 
 Keep hooks optional and sample-only, but link directly to the official hooks docs and explain:
 
-- feature flag requirement;
+- whether the local Codex version requires any feature flag;
 - where hooks load from;
 - multiple hooks can run;
 - `PreToolUse` is incomplete as an enforcement boundary;
@@ -373,7 +378,8 @@ network_access = false
 max_threads = 6
 max_depth = 1
 
-# Hooks are experimental. Enable only after inspecting ~/.codex/hooks.json.
+# Hook samples are inactive until promoted or merged into an active hooks layer.
+# Hooks are guardrails, not a complete security boundary.
 # [features]
 # codex_hooks = true
 ```
@@ -409,6 +415,6 @@ Before treating it as a polished npm package, I would prioritize:
 2. explicit permission presets;
 3. plugin install path and duplicate-skill resolution;
 4. real installer tests;
-5. hook documentation that reflects the official experimental boundary.
+5. hook documentation that reflects sample promotion and guardrail boundaries.
 
 After those changes, this would move from “useful personal scaffold” to “credible Codex onboarding kit.”

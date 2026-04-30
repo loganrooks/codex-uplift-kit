@@ -15,7 +15,8 @@
   ],
   "scripts": {
     "pack:local": "npm pack",
-    "smoke": "node bin/codex-uplift-init.mjs --dry-run --home /tmp/codex-uplift-kit-smoke-home"
+    "smoke": "node bin/codex-uplift-init.mjs --dry-run --home /tmp/codex-uplift-kit-smoke-home --user-home /tmp/codex-uplift-kit-smoke-user-home",
+    "test": "node --test"
   },
   "keywords": ["codex", "agents.md", "agent-skills", "auditability"],
   "license": "MIT",

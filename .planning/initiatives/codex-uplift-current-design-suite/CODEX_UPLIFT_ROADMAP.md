@@ -214,6 +214,54 @@ A v0.2 release candidate requires:
 - `.codex-uplift/release-candidate-review.md` created;
 - manual approval before npm publish, git tag, GitHub release, or remote push.
 
+### v0.2 implementation status on 2026-04-30
+
+Status: release-candidate implementation prepared; manual release decision
+pending.
+
+Implemented in the local package:
+
+- `inspect`;
+- `install --mode classic|plugin|hybrid|minimal`;
+- component selection and legacy skip aliases;
+- `status`;
+- `uninstall --manifest <path>`;
+- `config doctor`;
+- `config candidate --profile <profile>`;
+- candidate-only seams for project/hooks/rules/compact/RTK;
+- `verify`;
+- plugin path generation and validation for default personal installs;
+- duplicate skill avoidance by default and hybrid duplicate warning;
+- manifest merge preservation;
+- safe uninstall of unmodified package-owned files only;
+- safety-critical `node:test` suite.
+
+Release gates passed locally:
+
+- `npm test`;
+- `npm run smoke`;
+- `npm pack --dry-run`;
+- `npm publish --dry-run`;
+- temp-home inspect/install/config/status/uninstall checks;
+- docs updated;
+- `.codex-uplift/release-candidate-review.md` created;
+- `.codex-uplift/v0.3-handoff.md` created.
+
+Manual gates still pending:
+
+- package version bump from `0.1.0` to the approved v0.2 release version;
+- npm publish;
+- git tag;
+- remote push;
+- live Codex plugin restart/install verification if desired before stable
+  release.
+
+Residual caveat:
+
+- custom Codex homes outside the user-home marketplace root use an explicit
+  absolute local `source.path` fallback with warning. Probe live Codex behavior
+  before documenting this case as fully portable.
+
 ## 4. v0.3 — adaptive project/context/posture assistant
 
 ### Goal

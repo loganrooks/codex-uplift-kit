@@ -17,6 +17,35 @@ Subject: Current state and implementation handoff for `codex-uplift-kit`
 
 Do not confuse the planning suite with the package payload.
 
+## 0.1 Implementation update
+
+As of the 2026-04-30 v0.2 implementation pass, the package has a local
+release-candidate implementation of the setup/posture assistant baseline.
+
+Implemented:
+
+- `inspect`;
+- explicit install modes: `classic`, `plugin`, `hybrid`, and `minimal`;
+- component selection;
+- plugin mode that skips standalone skills by default;
+- hybrid duplicate skill warnings;
+- personal plugin marketplace path generation using user-home marketplace-root semantics;
+- manifest writes with sha256 ownership data;
+- manifest merge preservation across narrower later installs;
+- `status`;
+- safe manifest-based `uninstall`;
+- `config doctor`;
+- `config candidate --profile <profile>`;
+- candidate-only command seams for project, hooks, rules, compaction, and RTK;
+- `verify`;
+- safety-critical `npm test` coverage.
+
+Not yet released:
+
+- `package.json` still declares `0.1.0`;
+- no npm publish, git tag, remote push, or real user-home install has been performed;
+- `.codex-uplift/release-candidate-review.md` records the manual release checkpoint.
+
 ## 1. What v0.1 means
 
 v0.1 should be treated as a **bootstrap-slice prototype**, not as a polished npm release unless the implementation repo proves otherwise.
@@ -125,6 +154,9 @@ During implementation, keep these current:
 
 If any of these are intentionally not created, record why in `.codex-uplift/v0.2-deferral-check.md`.
 
+Current status: all required pre-implementation artifacts, change/test logs,
+release-candidate review, and v0.3 handoff have been created.
+
 ## 6. Manual checkpoint requirement
 
 The orchestrator may implement toward a v0.2 release candidate automatically under `CODEX_UPLIFT_AUTORUN_CONTRACT.md`.
@@ -173,3 +205,21 @@ Resolve through repo inspection, local tests, or candidate artifacts:
 - Which client behaviors differ across CLI/app/IDE and require compatibility notes?
 
 Unresolved answers must be recorded; they must not be guessed into code silently.
+
+## 9. Empirical answers from v0.2 pass
+
+- Current implementation package matched v0.1 as a prototype before this pass.
+- Package-owned files are tracked through the generated manifest and are eligible
+  for status/uninstall only when hashes match.
+- v0.2 commands can be implemented with Node standard library only for the
+  baseline slice.
+- Config parsing remains lightweight and observational; exact effective config
+  resolution is still D-002.
+- Default personal plugin install path is represented as
+  `./.codex/plugins/codex-uplift-kit` from the user-home marketplace root.
+- Custom Codex homes outside user home use an explicit absolute-path fallback
+  with a warning; live Codex acceptance remains a probe target.
+- Duplicate skill handling is mode-based: plugin skips standalone skills;
+  hybrid explicitly reports duplicate names.
+- Posture candidates are generated as candidate files only; no active user config
+  is modified.

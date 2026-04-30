@@ -1,4 +1,9 @@
 {
+  "_codexUpliftNotes": [
+    "Sample only: inactive until promoted or merged into an active hooks layer such as ~/.codex/hooks.json or trusted project .codex config.",
+    "Hooks are Codex lifecycle guardrails. They can reduce common mistakes, but they are not a complete security boundary.",
+    "Keep sandbox and approval settings conservative even when hook samples are active."
+  ],
   "hooks": {
     "PreToolUse": [
       {

@@ -8,7 +8,7 @@
       "name": "codex-uplift-kit",
       "source": {
         "source": "local",
-        "path": "./plugins/codex-uplift-kit"
+        "path": "./.codex/plugins/codex-uplift-kit"
       },
       "policy": {
         "installation": "AVAILABLE",

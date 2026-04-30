@@ -1,11 +1,40 @@
-# Optional Codex config fragment for codex-uplift-kit.
-# Merge manually into ~/.codex/config.toml after inspecting your existing config.
+# codex-uplift-kit candidate-only posture guidance.
+# Do not merge blindly into ~/.codex/config.toml. Inspect existing user,
+# managed, and trusted project config first, then copy only the settings
+# that match the posture you want.
 
 [agents]
 # Defaults are already conservative; keep depth at 1 unless you explicitly want recursive delegation.
 max_threads = 6
 max_depth = 1
 
-# Enable only after inspecting ~/.codex/hooks.json and hook scripts.
+# Hook samples are inactive until promoted or merged into an active hooks layer.
+# Hooks are lifecycle guardrails, not a complete security boundary.
+# In current Codex versions, codex_hooks is normally available by default unless
+# disabled by configuration or environment; keep this commented unless your
+# installed Codex explicitly requires a feature flag.
 # [features]
 # codex_hooks = true
+
+# Candidate profile examples. Profiles are CLI-focused and experimental; keep
+# them as reviewable candidates until your local Codex version and workflow are
+# verified.
+
+# [profiles.review-only]
+# sandbox_mode = "read-only"
+# approval_policy = "on-request"
+
+# [profiles.safe-interactive]
+# sandbox_mode = "workspace-write"
+# approval_policy = "on-request"
+# allow_login_shell = false
+#
+# [profiles.safe-interactive.sandbox_workspace_write]
+# network_access = false
+
+# Full-access reviewed is unsandboxed operation with approval review. It is not
+# sandboxed safety.
+# [profiles.full-access-reviewed]
+# sandbox_mode = "danger-full-access"
+# approval_policy = "on-request"
+# approvals_reviewer = "auto_review"
