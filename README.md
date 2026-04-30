@@ -30,6 +30,10 @@ Local alpha gates currently expected:
 GitHub Actions runs the automated gate subset on pushes and pull requests to
 `main` across Node 18, 20, and 22.
 
+Publishing is separate from CI. After the first manual npm publish, alpha
+publishes use npm trusted publishing from `.github/workflows/publish-npm.yml`
+when a GitHub Release is published. See [RELEASE.md](RELEASE.md).
+
 ## Implemented Command Surface
 
 ```text

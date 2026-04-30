@@ -115,6 +115,7 @@ Working tree contains the v0.2 release-candidate implementation and release arti
 - PASS temp-home no active `config.toml` after compact candidate.
 - PASS manifest `status`.
 - PASS manifest `uninstall --dry-run`.
+- PASS release workflow YAML parse/inspection for `.github/workflows/publish-npm.yml`.
 
 ## Tests Not Run
 
@@ -123,10 +124,13 @@ Working tree contains the v0.2 release-candidate implementation and release arti
 - No live hooks/rules enablement was run.
 - No RTK install/evaluation was run.
 - No cross-platform Windows/Linux matrix was run.
+- No live GitHub Release-triggered publish workflow was run.
+- No npm trusted publisher was configured yet; first manual npm publish is still
+  required before trusted publishing can be enabled.
 
 ## Package Contents Summary
 
-`npm run pack:dry-run` reported 33 files, package size about 25.4 kB, unpacked size about 91.6 kB. Contents include bin, templates, compaction prompt templates, README, CHANGELOG, SECURITY, LICENSE, and orchestrator prompts. `.DS_Store`, `.planning`, `.codex-uplift`, recovery-package files, archives, and temp files were not included in the tarball.
+`npm run pack:dry-run` reported 34 files, package size about 26.5 kB, unpacked size about 94.1 kB. Contents include bin, templates, compaction prompt templates, README, RELEASE, CHANGELOG, SECURITY, LICENSE, and orchestrator prompts. `.DS_Store`, `.planning`, `.codex-uplift`, recovery-package files, archives, and temp files were not included in the tarball.
 
 ## Install And Uninstall Verification
 
@@ -152,6 +156,8 @@ Working tree contains the v0.2 release-candidate implementation and release arti
 
 - Package version remains `0.1.0` until the manual release version bump.
 - Public CI/release gate files were added for alpha hardening; CI execution on GitHub has not yet run in this local pass.
+- npm trusted publishing workflow has been added, but it cannot be exercised
+  until after first manual npm publish and npm-side trusted publisher setup.
 - Candidate-only project/rules/hooks commands are minimal seam implementations;
   `compact candidate` now generates reviewable prompt candidates and an inactive
   config fragment.
@@ -161,7 +167,11 @@ Working tree contains the v0.2 release-candidate implementation and release arti
 
 ## Manual Gates Still Closed
 
-Do not run the version bump to `0.2.0-alpha.0`, npm publish, git tag, remote push, GitHub release creation, real user-home install, active hook/rule enablement, full-access profile activation, telemetry enablement, RTK activation, or v0.3 implementation without explicit user approval.
+Do not run the version bump to `0.2.0-alpha.0`, npm publish, npm trusted
+publisher activation, git tag, remote push, GitHub release creation, real
+user-home install, active hook/rule enablement, full-access profile activation,
+telemetry enablement, RTK activation, or v0.3 implementation without explicit
+user approval.
 
 ## Release Recommendation
 
@@ -169,4 +179,4 @@ Status: release candidate acceptable after patches.
 
 Recommendation: `ship-alpha`.
 
-Rationale: late orchestration recovery found and fixed material config/posture candidate mismatches. v0.2 now has the setup-assistant baseline, safety tests, profile-candidate content tests, manifest/status/uninstall, corrected plugin/duplicate behavior, release quality gates, and reconciled orchestration provenance. Keep alpha posture until a live Codex plugin install/restart check, GitHub CI observation, and manual package version bump are approved.
+Rationale: late orchestration recovery found and fixed material config/posture candidate mismatches. v0.2 now has the setup-assistant baseline, safety tests, profile-candidate content tests, manifest/status/uninstall, corrected plugin/duplicate behavior, release quality gates, trusted-publisher workflow preparation, and reconciled orchestration provenance. Keep alpha posture until a live Codex plugin install/restart check, GitHub CI observation, npm trusted publisher setup, and manual package version bump are approved.

@@ -197,3 +197,23 @@ Date: 2026-04-30
 - PASS temp-home no active `config.toml` after compact candidate.
 - PASS temp-home `status`.
 - PASS temp-home `uninstall --dry-run`.
+
+## GitHub And npm Release Workflow Hardening
+
+- Added `.github/workflows/publish-npm.yml` for GitHub Release-triggered npm
+  trusted publishing.
+- Added `repository.url` and public `publishConfig.access` to `package.json`.
+- Added `RELEASE.md` with first manual publish, npm trusted publisher setup,
+  gh release commands, and post-release verification.
+- Updated README, CHANGELOG, and release checkpoint docs to distinguish CI from
+  publishing.
+- Workflow policy: release `published` trigger, OIDC `id-token: write`, Node 24,
+  npm upgraded to latest, strict `v` tag and package-version matching,
+  alpha-only publish gate, and `npm publish --tag alpha` without `NPM_TOKEN`.
+- PASS `npm run release:check`.
+- PASS `npm_config_cache=/tmp/codex-uplift-npm-cache npm publish --dry-run` —
+  34 files, package size about 26.5 kB, unpacked size about 94.1 kB.
+- PASS workflow YAML parse for `.github/workflows/ci.yml` and
+  `.github/workflows/publish-npm.yml`.
+- Not run: live GitHub Release-triggered publish workflow; requires first manual
+  npm publish and npm-side trusted publisher setup.

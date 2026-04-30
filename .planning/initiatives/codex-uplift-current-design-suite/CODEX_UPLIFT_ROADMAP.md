@@ -254,6 +254,7 @@ Release gates passed locally:
 - `npm publish --dry-run`;
 - temp-home inspect/install/config/status/uninstall checks;
 - docs updated;
+- GitHub Release-triggered npm trusted publishing workflow prepared;
 - `.codex-uplift/release-candidate-review.md` created;
 - `.codex-uplift/v0.3-handoff.md` created.
 
@@ -273,6 +274,7 @@ Manual gates still pending:
 - package version bump from `0.1.0` to the approved v0.2 release version;
 - recommended alpha version is `0.2.0-alpha.0`;
 - npm publish;
+- first manual npm publish and npm trusted publisher setup;
 - git tag;
 - remote push;
 - first GitHub-hosted CI observation;

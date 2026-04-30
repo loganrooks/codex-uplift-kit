@@ -101,6 +101,10 @@ Planned release-candidate verification:
 - PASS temp-home no active `config.toml` after compact candidate.
 - PASS temp-home `status`.
 - PASS temp-home `uninstall --dry-run`.
+- PASS release workflow YAML parse/inspection for `.github/workflows/publish-npm.yml`.
+- PASS `npm_config_cache=/tmp/codex-uplift-npm-cache npm publish --dry-run`
+  after trusted-publishing workflow docs; package payload is 34 files, package
+  size about 26.5 kB, unpacked size about 94.1 kB.
 - Removed local `.DS_Store` byproducts and deleted the applied
   `_late-orchestration-recovery/` organizer after capture.
 - Regenerated planning `MANIFEST.md` after prompt restoration and recovery
@@ -116,5 +120,8 @@ Planned release-candidate verification:
   ownership issues in this environment.
 - The package version remains `0.1.0`; `npm version <version>` is a manual release-gate command in the release checkpoint.
 - Late recovery did not run a real user-home install, live hook/rule enablement, git tag, remote push, or npm publish.
+- Trusted publishing workflow execution was not run locally; it requires a
+  pushed workflow, first manual npm publish, npm trusted publisher setup, and a
+  published GitHub Release.
 - The recovery package has been applied, captured in parent planning and
   repo-local `.codex-uplift/` artifacts, and removed after capture.

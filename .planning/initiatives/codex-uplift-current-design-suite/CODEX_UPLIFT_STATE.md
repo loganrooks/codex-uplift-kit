@@ -251,3 +251,6 @@ Unresolved answers must be recorded; they must not be guessed into code silently
 - Release quality gates now include `npm run verify`, `npm run pack:dry-run`,
   `npm run release:check`, GitHub Actions CI on Node 18/20/22, and
   `git diff --check`.
+- GitHub Release-triggered npm trusted publishing is prepared for alpha
+  releases, but first manual npm publish and npm-side trusted publisher setup
+  remain manual gates.

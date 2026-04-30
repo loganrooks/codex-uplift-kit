@@ -754,6 +754,7 @@ test('package dry-run contains only expected release payload', (t) => {
     'ORCHESTRATOR_AGENTS_FRAGMENT.md',
     'ORCHESTRATOR_INSTALL_PROMPT.md',
     'README.md',
+    'RELEASE.md',
     'SECURITY.md',
     'package.json',
   ]);

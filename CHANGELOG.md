@@ -18,6 +18,8 @@ Recommended prerelease version after manual approval: `0.2.0-alpha.0`.
   hooks/rules/compact candidate seams, `rtk evaluate --plan-only`, and `verify`.
 - Release quality gates through `npm run verify`, `npm run pack:dry-run`,
   `npm run release:check`, and GitHub Actions CI on Node 18, 20, and 22.
+- GitHub Release-triggered npm trusted publishing workflow for alpha releases,
+  guarded by strict tag/package-version matching.
 - Release payload compaction prompt templates plus `compact candidate` and
   `compaction-prompts` component generation of inactive prompt/config
   candidates.

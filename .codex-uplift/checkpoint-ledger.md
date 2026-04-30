@@ -19,6 +19,7 @@ Date: 2026-04-30
 | `3423637` | planning design suite checkpoint |
 | `3c5fd69` | v0.2 implementation artifacts checkpoint |
 | `db2e418` | v0.2 setup assistant release-candidate checkpoint before late recovery |
+| `b8c02cc` | v0.2 alpha hardening checkpoint |
 
 ## Recovery Checkpoints
 
@@ -31,7 +32,8 @@ Date: 2026-04-30
 | Config/posture hardening | done | profile generator and tests patched by worker; verification passed |
 | Release quality gates | done | package scripts, CI workflow, public hygiene files, and alpha docs added by Worker B |
 | Recovery folder cleanup | done | recovery package applied, captured in parent planning and `.codex-uplift/` artifacts, then removed deliberately after capture |
-| Final recovery commit | pending | stop before publish/version/tag/push/release |
+| Final recovery commit | done | `b8c02cc` committed the hardening pass; stop before publish/version/tag/push/release |
+| Trusted publish workflow | prepared | workflow/docs added after `b8c02cc`; live run still requires first manual npm publish and npm trusted publisher setup |
 
 ## Rollback Notes
 

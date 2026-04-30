@@ -117,6 +117,7 @@ Confirm docs explain:
 - rules are experimental command-policy surfaces;
 - release and manual gates;
 - how to uninstall.
+- npm trusted publishing setup and GitHub Release-triggered alpha publishing.
 
 ## 7. Late orchestration recovery checks
 
@@ -172,6 +173,20 @@ git push origin v<version>
 ```
 
 If GitHub release automation is desired, prepare a draft release note first and ask the user to review.
+
+## 9.1 Trusted publishing workflow
+
+After the first manual npm publish creates the package on npm, configure npm
+trusted publishing with:
+
+- Publisher: GitHub Actions
+- Owner/user: `loganrooks`
+- Repository: `codex-uplift-kit`
+- Workflow filename: `publish-npm.yml`
+
+The workflow publishes only from GitHub Release `published` events, requires
+OIDC `id-token: write`, rejects non-`v` tags, rejects package/tag version
+mismatches, and rejects stable releases until that gate is explicitly revised.
 
 ## 10. User release decision
 
