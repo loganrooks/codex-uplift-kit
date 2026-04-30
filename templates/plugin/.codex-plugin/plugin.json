@@ -1,6 +1,6 @@
 {
   "name": "codex-uplift-kit",
-  "version": "0.1.0",
+  "version": "0.2.0-alpha.0",
   "description": "Reusable Codex skills for auditable project onboarding, audit artifacts, delegation contracts, and retrospectives.",
   "skills": "./skills/",
   "interface": {

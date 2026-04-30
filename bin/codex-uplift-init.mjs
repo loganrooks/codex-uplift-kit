@@ -29,9 +29,9 @@ const componentIds = [
 ];
 
 const modeComponents = {
-  classic: ['home-agents', 'skills', 'agents', 'config-candidates', 'hook-samples', 'rule-samples', 'manifest'],
-  plugin: ['home-agents', 'agents', 'config-candidates', 'hook-samples', 'rule-samples', 'plugin', 'manifest'],
-  hybrid: ['home-agents', 'skills', 'agents', 'config-candidates', 'hook-samples', 'rule-samples', 'plugin', 'manifest'],
+  classic: ['home-agents', 'skills', 'agents', 'config-candidates', 'hook-samples', 'rule-samples', 'compaction-prompts', 'manifest'],
+  plugin: ['home-agents', 'agents', 'config-candidates', 'hook-samples', 'rule-samples', 'compaction-prompts', 'plugin', 'manifest'],
+  hybrid: ['home-agents', 'skills', 'agents', 'config-candidates', 'hook-samples', 'rule-samples', 'compaction-prompts', 'plugin', 'manifest'],
   minimal: ['home-agents', 'config-candidates', 'manifest'],
 };
 
@@ -533,25 +533,24 @@ function runInstall(options) {
     for (const name of promptFiles) {
       copyFile(
         path.join(sourceDir, name),
-        path.join(options.codexHome, 'compact.candidate', 'prompts', name),
+        path.join(options.codexHome, 'compaction-prompts', name),
         'compaction-prompts',
         state,
-        { kind: 'candidate' },
       );
     }
     writeTextFile(
-      path.join(options.codexHome, 'compact.candidate', 'README.md'),
+      path.join(options.codexHome, 'compaction-prompts', 'README.md'),
       compactCandidateReadme(promptFiles),
       'compaction-prompts',
       state,
-      { kind: 'candidate' },
+      { sourcePath: 'generated:compaction-prompts/README.md' },
     );
     writeTextFile(
-      path.join(options.codexHome, 'compact.candidate', 'config.fragment.toml'),
+      path.join(options.codexHome, 'compaction-prompts', 'config.fragment.toml'),
       compactCandidateConfigFragment(),
       'compaction-prompts',
       state,
-      { kind: 'candidate' },
+      { sourcePath: 'generated:compaction-prompts/config.fragment.toml' },
     );
   }
   if (components.has('plugin')) {
@@ -750,16 +749,16 @@ function copyStandaloneCandidate(src, dst, options) {
 
 function compactCandidateReadme(promptNames) {
   return [
-    `# ${packageName} compaction prompt candidates`,
+    `# ${packageName} compaction prompts`,
     '',
-    'These files are candidate-only compaction prompts. They are copied under `compact.candidate/` so they can be reviewed without changing active Codex configuration.',
+    'These prompt files are installed assets for Codex auto-compaction. They are safe to keep on disk, but Codex will not use them until active config points at one of them.',
     '',
     'This command does not create or modify `config.toml`, does not enable compaction settings, and does not activate `compact_prompt` or `experimental_compact_prompt_file`.',
     '',
-    'Prompt candidates:',
-    ...promptNames.map((name) => `- prompts/${name}`),
+    'Installed prompts:',
+    ...promptNames.map((name) => `- ${name}`),
     '',
-    'Review current Codex documentation and your effective config before manually adopting any prompt.',
+    'To use one, review the prompt and merge the example from `config.fragment.toml` into your active Codex config.',
     '',
   ].join('\n');
 }
@@ -768,11 +767,11 @@ function compactCandidateConfigFragment() {
   return [
     '# Candidate-only compaction config fragment',
     '# This file is not active config. The installer did not write config.toml.',
-    '# Keep these examples commented unless you intentionally review and merge them.',
+    '# Uncomment and merge one setting only after choosing the prompt you want.',
     '# Verify current Codex support before using either setting name.',
     '',
     '# compact_prompt = "<paste reviewed prompt text here>"',
-    '# experimental_compact_prompt_file = "~/.codex/compact.candidate/prompts/general-continuation.md"',
+    '# experimental_compact_prompt_file = "~/.codex/compaction-prompts/general-continuation.md"',
     '',
   ].join('\n');
 }
@@ -781,25 +780,25 @@ function compactCandidate(options) {
   const sourceDir = path.join(templates, 'compaction-prompts');
   if (!fs.existsSync(sourceDir)) throw new Error(`Compaction prompt templates not found: ${sourceDir}`);
 
-  const root = path.join(options.codexHome, 'compact.candidate');
-  const promptsRoot = path.join(root, 'prompts');
+  const root = path.join(options.codexHome, 'compaction-prompts');
   const promptFiles = fs.readdirSync(sourceDir, { withFileTypes: true })
     .filter((ent) => ent.isFile() && ent.name.endsWith('.md') && !isJunk(ent.name))
     .map((ent) => ent.name)
     .sort();
   if (!promptFiles.length) throw new Error(`No compaction prompt templates found: ${sourceDir}`);
 
-  console.log(`${options.dryRun ? 'Dry run' : 'Candidate'} compaction prompts for ${packageName}`);
+  console.log(`${options.dryRun ? 'Dry run' : 'Install'} compaction prompts for ${packageName}`);
   console.log(`Codex home: ${options.codexHome}`);
   console.log('');
   for (const name of promptFiles) {
-    copyStandaloneCandidate(path.join(sourceDir, name), path.join(promptsRoot, name), options);
+    copyStandaloneCandidate(path.join(sourceDir, name), path.join(root, name), options);
   }
   writeStandaloneCandidate(path.join(root, 'README.md'), compactCandidateReadme(promptFiles), options);
   writeStandaloneCandidate(path.join(root, 'config.fragment.toml'), compactCandidateConfigFragment(), options);
   console.log('');
   console.log('Notes:');
-  console.log('- Candidate-only: no active config.toml was created or modified.');
+  console.log('- Prompt files are installed under compaction-prompts/.');
+  console.log('- No active config.toml was created or modified.');
   console.log('- No compact_prompt or experimental_compact_prompt_file setting was activated.');
   console.log('- Review prompts and current Codex docs before manually adopting any compaction setting.');
 }

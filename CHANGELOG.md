@@ -5,6 +5,18 @@ All notable changes to `codex-uplift-kit` will be recorded here.
 This project uses prerelease alpha checkpoints while the setup/posture assistant
 surface hardens. The current published package is `0.2.0-alpha.0`.
 
+## Unreleased
+
+### Fixed
+
+- Install compaction prompt assets under `~/.codex/compaction-prompts/` instead
+  of the confusing `compact.candidate/` staging directory, and include those
+  safe assets in normal classic/plugin/hybrid installs.
+- Point the inactive compaction config fragment at the installed prompt path
+  while continuing to avoid active `config.toml` mutation.
+- Keep plugin metadata version aligned with `package.json`.
+- Refresh README alpha wording after the `0.2.0-alpha.0` publication.
+
 ## 0.2.0-alpha.0 - 2026-04-30
 
 Published prerelease alpha. GitHub Release:

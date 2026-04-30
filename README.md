@@ -10,9 +10,7 @@ policy enforcement.
 
 ## Alpha Status
 
-The repository contains a v0.2 alpha release-candidate implementation. The
-recommended prerelease version is `0.2.0-alpha.0`, but `package.json` remains
-`0.1.0` until the manual version-bump gate is approved.
+The current published alpha is `0.2.0-alpha.0`.
 
 Local alpha gates currently expected:
 
@@ -89,7 +87,7 @@ Depending on mode and component selection, the installer writes or proposes:
 - config/profile candidate TOML;
 - plugin package files and marketplace metadata;
 - project onboarding candidates;
-- compaction prompt candidates;
+- compaction prompt files under `~/.codex/compaction-prompts/`;
 - a manifest of package-owned files for `status` and safe `uninstall`.
 
 Existing files are not overwritten by default. When a target exists, the
@@ -131,8 +129,10 @@ Replace `<version>` with the tarball version printed by `npm pack`.
 
 ## Safety Notes
 
-- Keep generated config, rules, hooks, compaction prompts, and project files as
-  candidates until reviewed.
+- Keep generated config, rules, hooks, and project files as candidates until
+  reviewed.
+- Compaction prompt files are installed assets; Codex will not use them until
+  active config points at one.
 - Do not treat hooks or rules as complete security boundaries.
 - `danger-full-access` means unsandboxed local operation.
 - `approvals_reviewer = "auto_review"` adds a review gate to approval requests;
@@ -157,8 +157,8 @@ and [hooks](https://developers.openai.com/codex/hooks).
 - Active hooks, rules, full-access profiles, telemetry, and RTK integration are
   not enabled by default.
 - Candidate-only project/rules/hooks/RTK commands are intentionally minimal
-  seams for alpha validation; `compact candidate` generates reviewable prompt
-  candidates and an inactive config fragment.
+  seams for alpha validation; `compact candidate` installs compaction prompt
+  files and an inactive config fragment.
 
 ## Suggested First Prompt After Install
 

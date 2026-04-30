@@ -279,6 +279,7 @@ test('install --mode classic writes standalone skills and a manifest in temp hom
     'classic install should copy standalone skills under the isolated user home',
   );
   assert.ok(fs.existsSync(path.join(homes.codexHome, 'AGENTS.md')), 'classic install should write home AGENTS.md');
+  assert.ok(fs.existsSync(path.join(homes.codexHome, 'compaction-prompts', 'general-continuation.md')), 'classic install should write compaction prompt assets');
   assert.ok(fs.existsSync(manifestPath(homes.codexHome)), 'classic install should write manifest under the isolated Codex home');
   assertManifestHasEntries(homes.codexHome, 'classic');
 });
@@ -306,9 +307,9 @@ test('component selection supports minimal, only, skip, components, and legacy a
   const onlyCompaction = makeTempHomes(t);
   assertSuccess(runCliWithHomes(['install', '--only', 'compaction-prompts,manifest'], onlyCompaction), '--only compaction-prompts install');
   assert.deepEqual(
-    fs.readdirSync(path.join(onlyCompaction.codexHome, 'compact.candidate', 'prompts')).sort(),
+    fs.readdirSync(path.join(onlyCompaction.codexHome, 'compaction-prompts')).filter((name) => name.endsWith('.md') && name !== 'README.md').sort(),
     expectedCompactionPromptNames(),
-    '--only compaction-prompts should install inactive prompt candidates',
+    '--only compaction-prompts should install prompt assets',
   );
   assert.equal(fs.existsSync(path.join(onlyCompaction.codexHome, 'config.toml')), false, '--only compaction-prompts should not create active config.toml');
   assert.ok(
@@ -356,6 +357,7 @@ test('install --mode plugin skips standalone skills and writes resolvable market
     expectedPluginSkillNames(),
     'plugin install should copy plugin-packaged skills',
   );
+  assert.ok(fs.existsSync(path.join(homes.codexHome, 'compaction-prompts', 'general-continuation.md')), 'plugin install should write compaction prompt assets');
   assertNoJunkFiles(pluginRoot);
 
   const marketplacePath = path.join(homes.userHome, '.agents', 'plugins', 'marketplace.json');
@@ -575,7 +577,7 @@ test('dry-run candidate and project inspect commands do not write files', (t) =>
   assert.equal(fs.existsSync(path.join(homes.codexHome, 'project.candidate')), false, 'dry-run project candidate should not create project candidate directory');
   assert.equal(fs.existsSync(path.join(homes.codexHome, 'rules.candidate')), false, 'dry-run rules candidate should not create rules candidate directory');
   assert.equal(fs.existsSync(path.join(homes.codexHome, 'hooks.candidate')), false, 'dry-run hooks candidate should not create hooks candidate directory');
-  assert.equal(fs.existsSync(path.join(homes.codexHome, 'compact.candidate')), false, 'dry-run compact candidate should not create compact candidate directory');
+  assert.equal(fs.existsSync(path.join(homes.codexHome, 'compaction-prompts')), false, 'dry-run compact candidate should not create compaction prompts directory');
   assert.equal(fs.existsSync(projectReportDir), false, 'dry-run project inspect should not create repo-local project report directory');
 });
 
@@ -636,9 +638,12 @@ test('compact candidate generates all prompt candidates without active config mu
   const result = runCliWithHomes(['compact', 'candidate'], homes);
   assertSuccess(result, 'compact candidate');
 
-  const root = path.join(homes.codexHome, 'compact.candidate');
-  const promptRoot = path.join(root, 'prompts');
-  assert.deepEqual(fs.readdirSync(promptRoot).sort(), expectedCompactionPromptNames(), 'compact candidate should copy every release prompt template');
+  const root = path.join(homes.codexHome, 'compaction-prompts');
+  assert.deepEqual(
+    fs.readdirSync(root).filter((name) => name.endsWith('.md') && name !== 'README.md').sort(),
+    expectedCompactionPromptNames(),
+    'compact candidate should copy every release prompt template',
+  );
   assert.ok(fs.existsSync(path.join(root, 'README.md')), 'compact candidate should write review README');
   assert.ok(fs.existsSync(path.join(root, 'config.fragment.toml')), 'compact candidate should write inactive config fragment');
   assert.equal(fs.existsSync(path.join(homes.codexHome, 'config.toml')), false, 'compact candidate should not create active config.toml');
@@ -646,6 +651,7 @@ test('compact candidate generates all prompt candidates without active config mu
   const fragment = fs.readFileSync(path.join(root, 'config.fragment.toml'), 'utf8');
   assert.match(fragment, /^# compact_prompt =/m, 'compact config fragment should include commented compact_prompt example');
   assert.match(fragment, /^# experimental_compact_prompt_file =/m, 'compact config fragment should include commented file example');
+  assert.match(fragment, /~\/\.codex\/compaction-prompts\/general-continuation\.md/, 'compact config fragment should point at installed prompt path');
   assert.doesNotMatch(fragment, /^\s*compact_prompt\s*=/m, 'compact candidate should not activate compact_prompt');
   assert.doesNotMatch(fragment, /^\s*experimental_compact_prompt_file\s*=/m, 'compact candidate should not activate experimental compact prompt file');
 });
@@ -716,6 +722,11 @@ test('JSON templates parse and hook samples return valid deny/stop output shapes
   ]) {
     assert.doesNotThrow(() => readJson(file), `${file} should parse as JSON`);
   }
+  assert.equal(
+    readJson(path.join(templatesDir, 'plugin', '.codex-plugin', 'plugin.json')).version,
+    packageVersion(),
+    'plugin metadata version should match package version',
+  );
 
   const preTool = spawnSync(process.execPath, [path.join(templatesDir, 'hooks', 'pretool-protect-git.mjs')], {
     cwd: repoRoot,
