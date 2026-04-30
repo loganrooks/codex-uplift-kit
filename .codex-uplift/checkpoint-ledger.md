@@ -29,6 +29,8 @@ Date: 2026-04-30
 | Parent routing updated | done | index, entrypoint, state, roadmap, release checkpoint, and manifest patched |
 | Retrospective artifacts created | done | recovery ledgers created and applied note recorded |
 | Config/posture hardening | done | profile generator and tests patched by worker; verification passed |
+| Release quality gates | done | package scripts, CI workflow, public hygiene files, and alpha docs added by Worker B |
+| Recovery folder cleanup | done | recovery package applied, captured in parent planning and `.codex-uplift/` artifacts, then removed deliberately after capture |
 | Final recovery commit | pending | stop before publish/version/tag/push/release |
 
 ## Rollback Notes

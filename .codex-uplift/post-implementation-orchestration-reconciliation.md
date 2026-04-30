@@ -48,7 +48,10 @@ The recovery package was relocated to:
 .planning/initiatives/codex-uplift-current-design-suite/_late-orchestration-recovery/
 ```
 
-Disposition: archived as provenance with `_late-orchestration-recovery/RECOVERY_APPLIED.md`.
+Disposition: applied and captured, then removed during release hardening. The
+relevant late orchestration, delegation, and worktree-isolation docs now live in
+the parent planning suite, and the applied outcome remains recorded in
+repo-local `.codex-uplift/` artifacts.
 
 ## Parent-Suite Updates
 
@@ -59,7 +62,8 @@ Updated or in progress:
 - `CODEX_UPLIFT_STATE.md` records recovery status and release impact.
 - `CODEX_UPLIFT_ROADMAP.md` records the late orchestration recovery gate.
 - `CODEX_UPLIFT_RELEASE_CHECKPOINT.md` includes recovery and config/posture hardening checks.
-- `MANIFEST.md` must be regenerated with actual file sizes after all recovery edits settle.
+- `MANIFEST.md` was regenerated after compaction prompt restoration and recovery
+  cleanup.
 
 ## Implementation Work Already Completed
 
@@ -111,3 +115,7 @@ v0.2 alpha candidate prepared after late orchestration recovery; manual release 
 ```
 
 Release recommendation after patches: `ship-alpha`.
+
+Recommended alpha version after manual approval: `0.2.0-alpha.0`.
+
+Release quality gates added after recovery: package scripts, public hygiene files, and GitHub Actions CI across Node 18/20/22. GitHub-hosted CI observation is still pending.

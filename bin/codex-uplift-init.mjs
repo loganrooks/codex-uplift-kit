@@ -488,12 +488,9 @@ function runInstall(options) {
   const warnings = [];
   const state = { options, actions: [], manifestEntries: [] };
 
-  if (options.mode === 'plugin' && components.has('skills') && !options.only && !options.components.includes('skills')) {
-    warnings.push('plugin mode skips standalone skills by default.');
-  }
-  if (options.mode === 'hybrid' && components.has('skills') && components.has('plugin')) {
+  if (components.has('skills') && components.has('plugin')) {
     const dupes = duplicateSkillNames();
-    if (dupes.length) warnings.push(`hybrid mode duplicate skill names: ${dupes.join(', ')}`);
+    if (dupes.length) warnings.push(`install includes both standalone and plugin skill copies; duplicate skill names: ${dupes.join(', ')}`);
   }
 
   if (components.has('home-agents')) {
@@ -523,6 +520,36 @@ function runInstall(options) {
       path.join(options.codexHome, 'rules.codex-uplift-kit.candidate.md'),
       '# Codex Uplift Rule Candidates\n\nRules are candidate notes only. Review current Codex docs before enabling command permission rules.\n',
       'rule-samples',
+      state,
+      { kind: 'candidate' },
+    );
+  }
+  if (components.has('compaction-prompts')) {
+    const sourceDir = path.join(templates, 'compaction-prompts');
+    const promptFiles = fs.readdirSync(sourceDir, { withFileTypes: true })
+      .filter((ent) => ent.isFile() && ent.name.endsWith('.md') && !isJunk(ent.name))
+      .map((ent) => ent.name)
+      .sort();
+    for (const name of promptFiles) {
+      copyFile(
+        path.join(sourceDir, name),
+        path.join(options.codexHome, 'compact.candidate', 'prompts', name),
+        'compaction-prompts',
+        state,
+        { kind: 'candidate' },
+      );
+    }
+    writeTextFile(
+      path.join(options.codexHome, 'compact.candidate', 'README.md'),
+      compactCandidateReadme(promptFiles),
+      'compaction-prompts',
+      state,
+      { kind: 'candidate' },
+    );
+    writeTextFile(
+      path.join(options.codexHome, 'compact.candidate', 'config.fragment.toml'),
+      compactCandidateConfigFragment(),
+      'compaction-prompts',
       state,
       { kind: 'candidate' },
     );
@@ -696,6 +723,87 @@ function candidateCommand(name, options) {
   }
 }
 
+function candidateFileTarget(dst, options) {
+  if (!fs.existsSync(dst)) return { target: dst, action: 'write' };
+  if (options.force) return { target: dst, action: 'overwrite', backup: `${dst}.backup.${stamp}` };
+  return { target: `${dst}.candidate.${stamp}`, action: 'candidate' };
+}
+
+function writeStandaloneCandidate(dst, content, options) {
+  const { target, action, backup } = candidateFileTarget(dst, options);
+  if (options.dryRun) {
+    if (backup) console.log(`would backup ${dst} -> ${backup}`);
+    console.log(`would ${action === 'overwrite' ? 'overwrite' : 'write'} ${target}`);
+    return target;
+  }
+  fs.mkdirSync(path.dirname(target), { recursive: true });
+  if (backup) fs.copyFileSync(dst, backup);
+  fs.writeFileSync(target, content);
+  if (backup) console.log(`backup     ${dst} -> ${backup}`);
+  console.log(`${action === 'candidate' ? 'candidate' : action.padEnd(9)} ${target}`);
+  return target;
+}
+
+function copyStandaloneCandidate(src, dst, options) {
+  return writeStandaloneCandidate(dst, fs.readFileSync(src, 'utf8'), options);
+}
+
+function compactCandidateReadme(promptNames) {
+  return [
+    `# ${packageName} compaction prompt candidates`,
+    '',
+    'These files are candidate-only compaction prompts. They are copied under `compact.candidate/` so they can be reviewed without changing active Codex configuration.',
+    '',
+    'This command does not create or modify `config.toml`, does not enable compaction settings, and does not activate `compact_prompt` or `experimental_compact_prompt_file`.',
+    '',
+    'Prompt candidates:',
+    ...promptNames.map((name) => `- prompts/${name}`),
+    '',
+    'Review current Codex documentation and your effective config before manually adopting any prompt.',
+    '',
+  ].join('\n');
+}
+
+function compactCandidateConfigFragment() {
+  return [
+    '# Candidate-only compaction config fragment',
+    '# This file is not active config. The installer did not write config.toml.',
+    '# Keep these examples commented unless you intentionally review and merge them.',
+    '# Verify current Codex support before using either setting name.',
+    '',
+    '# compact_prompt = "<paste reviewed prompt text here>"',
+    '# experimental_compact_prompt_file = "~/.codex/compact.candidate/prompts/general-continuation.md"',
+    '',
+  ].join('\n');
+}
+
+function compactCandidate(options) {
+  const sourceDir = path.join(templates, 'compaction-prompts');
+  if (!fs.existsSync(sourceDir)) throw new Error(`Compaction prompt templates not found: ${sourceDir}`);
+
+  const root = path.join(options.codexHome, 'compact.candidate');
+  const promptsRoot = path.join(root, 'prompts');
+  const promptFiles = fs.readdirSync(sourceDir, { withFileTypes: true })
+    .filter((ent) => ent.isFile() && ent.name.endsWith('.md') && !isJunk(ent.name))
+    .map((ent) => ent.name)
+    .sort();
+  if (!promptFiles.length) throw new Error(`No compaction prompt templates found: ${sourceDir}`);
+
+  console.log(`${options.dryRun ? 'Dry run' : 'Candidate'} compaction prompts for ${packageName}`);
+  console.log(`Codex home: ${options.codexHome}`);
+  console.log('');
+  for (const name of promptFiles) {
+    copyStandaloneCandidate(path.join(sourceDir, name), path.join(promptsRoot, name), options);
+  }
+  writeStandaloneCandidate(path.join(root, 'README.md'), compactCandidateReadme(promptFiles), options);
+  writeStandaloneCandidate(path.join(root, 'config.fragment.toml'), compactCandidateConfigFragment(), options);
+  console.log('');
+  console.log('Notes:');
+  console.log('- Candidate-only: no active config.toml was created or modified.');
+  console.log('- No compact_prompt or experimental_compact_prompt_file setting was activated.');
+  console.log('- Review prompts and current Codex docs before manually adopting any compaction setting.');
+}
+
 function projectInspect(options) {
   const outDir = path.join(process.cwd(), '.codex-uplift', 'project');
   const out = path.join(outDir, 'observations.md');
@@ -730,10 +838,19 @@ function verify(options) {
     path.join(templates, 'home', 'AGENTS.md'),
     path.join(templates, 'skills'),
     path.join(templates, 'agents'),
+    path.join(templates, 'compaction-prompts'),
     path.join(templates, 'plugin', '.codex-plugin', 'plugin.json'),
     path.join(templates, 'plugin-marketplace', 'marketplace.json'),
   ];
   for (const target of required) checks.push([fs.existsSync(target), `exists ${path.relative(packageRoot, target)}`]);
+  const compactionPromptDir = path.join(templates, 'compaction-prompts');
+  const compactionPrompts = fs.existsSync(compactionPromptDir)
+    ? fs.readdirSync(compactionPromptDir, { withFileTypes: true })
+      .filter((ent) => ent.isFile() && ent.name.endsWith('.md') && !isJunk(ent.name))
+      .map((ent) => ent.name)
+      .sort()
+    : [];
+  checks.push([compactionPrompts.length >= 6, 'compaction prompt release templates are present']);
   const marketplace = JSON.parse(fs.readFileSync(path.join(templates, 'plugin-marketplace', 'marketplace.json'), 'utf8'));
   checks.push([marketplace.plugins?.[0]?.source?.path === './.codex/plugins/codex-uplift-kit', 'marketplace template uses default personal plugin path']);
   checks.push([isJunk('.DS_Store') && isJunk('Thumbs.db') && isJunk('notes.swp'), 'copy walker recognizes common junk file names']);
@@ -764,7 +881,7 @@ function main() {
     if (command === 'project' && positionals[1] === 'candidate') return candidateCommand('project', options);
     if (command === 'rules' && positionals[1] === 'candidate') return candidateCommand('rules', options);
     if (command === 'hooks' && positionals[1] === 'candidate') return candidateCommand('hooks', options);
-    if (command === 'compact' && positionals[1] === 'candidate') return candidateCommand('compact', options);
+    if (command === 'compact' && positionals[1] === 'candidate') return compactCandidate(options);
     if (command === 'rtk' && positionals[1] === 'evaluate') return rtkEvaluate(options);
     throw new Error(`Unknown command: ${positionals.join(' ')}`);
   } catch (err) {

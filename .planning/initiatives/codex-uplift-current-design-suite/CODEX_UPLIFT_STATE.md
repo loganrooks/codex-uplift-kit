@@ -28,7 +28,7 @@ Implemented:
 - explicit install modes: `classic`, `plugin`, `hybrid`, and `minimal`;
 - component selection;
 - plugin mode that skips standalone skills by default;
-- hybrid duplicate skill warnings;
+- duplicate skill warnings whenever standalone and plugin skills are selected together;
 - personal plugin marketplace path generation using user-home marketplace-root semantics;
 - manifest writes with sha256 ownership data;
 - manifest merge preservation across narrower later installs;
@@ -36,7 +36,8 @@ Implemented:
 - safe manifest-based `uninstall`;
 - `config doctor`;
 - `config candidate --profile <profile>`;
-- candidate-only command seams for project, hooks, rules, compaction, and RTK;
+- candidate-only command seams for project, hooks, rules, and RTK;
+- compaction prompt candidate generation;
 - `verify`;
 - safety-critical `npm test` coverage.
 
@@ -44,6 +45,7 @@ Not yet released:
 
 - `package.json` still declares `0.1.0`;
 - no npm publish, git tag, remote push, or real user-home install has been performed;
+- recommended alpha version is `0.2.0-alpha.0`, pending manual version-bump approval;
 - `.codex-uplift/release-candidate-review.md` records the manual release checkpoint.
 
 ## 0.2 Late orchestration recovery status
@@ -59,9 +61,14 @@ Required follow-up:
 - ran config/posture semantic review;
 - patched profile candidate generation and content tests;
 - updated release checkpoint and public docs;
+- added public repository hygiene files and release quality gates;
 - reran verification after hardening patches.
 
 Release impact: the recovery pass found and fixed a material config/posture candidate mismatch. The v0.2 alpha candidate is prepared after late orchestration recovery; manual release decision pending.
+
+Recovery folder disposition: applied, copied into the parent planning suite
+where relevant, captured in repo-local `.codex-uplift/` artifacts, and removed
+from `_late-orchestration-recovery/` during release hardening.
 
 ## 1. What v0.1 means
 
@@ -236,7 +243,11 @@ Unresolved answers must be recorded; they must not be guessed into code silently
   `./.codex/plugins/codex-uplift-kit` from the user-home marketplace root.
 - Custom Codex homes outside user home use an explicit absolute-path fallback
   with a warning; live Codex acceptance remains a probe target.
-- Duplicate skill handling is mode-based: plugin skips standalone skills;
-  hybrid explicitly reports duplicate names.
+- Duplicate skill handling is component-aware: plugin skips standalone skills by
+  default; any explicit selection that installs both standalone and plugin
+  skills reports duplicate names.
 - Posture candidates are generated as candidate files only; no active user config
   is modified.
+- Release quality gates now include `npm run verify`, `npm run pack:dry-run`,
+  `npm run release:check`, GitHub Actions CI on Node 18/20/22, and
+  `git diff --check`.

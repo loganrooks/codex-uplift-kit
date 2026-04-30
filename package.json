@@ -1,7 +1,7 @@
 {
   "name": "codex-uplift-kit",
   "version": "0.1.0",
-  "description": "Personal Codex setup kit: user-level AGENTS.md, audit skills, custom agents, and optional hooks.",
+  "description": "Non-destructive Codex setup and posture assistant for auditable local configuration candidates.",
   "type": "module",
   "bin": {
     "codex-uplift-init": "bin/codex-uplift-init.mjs"
@@ -10,13 +10,19 @@
     "bin/",
     "templates/",
     "README.md",
+    "CHANGELOG.md",
+    "SECURITY.md",
+    "LICENSE",
     "ORCHESTRATOR_INSTALL_PROMPT.md",
     "ORCHESTRATOR_AGENTS_FRAGMENT.md"
   ],
   "scripts": {
+    "pack:dry-run": "npm_config_cache=/tmp/codex-uplift-npm-cache npm pack --json --dry-run",
     "pack:local": "npm pack",
+    "release:check": "npm test && npm run smoke && npm run verify && npm run pack:dry-run && git diff --check",
     "smoke": "node bin/codex-uplift-init.mjs --dry-run --home /tmp/codex-uplift-kit-smoke-home --user-home /tmp/codex-uplift-kit-smoke-user-home",
-    "test": "node --test"
+    "test": "node --test",
+    "verify": "node bin/codex-uplift-init.mjs verify"
   },
   "keywords": ["codex", "agents.md", "agent-skills", "auditability"],
   "license": "MIT",

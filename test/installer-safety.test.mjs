@@ -131,6 +131,14 @@ function expectedPluginSkillNames() {
     .sort();
 }
 
+function expectedCompactionPromptNames() {
+  return fs
+    .readdirSync(path.join(templatesDir, 'compaction-prompts'), { withFileTypes: true })
+    .filter((entry) => entry.isFile() && entry.name.endsWith('.md'))
+    .map((entry) => entry.name)
+    .sort();
+}
+
 function manifestPath(codexHome) {
   return path.join(codexHome, 'codex-uplift-kit', 'manifest.json');
 }
@@ -166,6 +174,7 @@ function assertManifestHasEntries(codexHome, mode) {
   assert.ok(entries.every((entry) => entry.targetPath ?? entry.target), 'manifest entries should record target paths');
   assert.ok(entries.every((entry) => entry.actionType ?? entry.action), 'manifest entries should record action type');
   assert.ok(entries.every((entry) => entry.sha256), 'manifest entries should record sha256 for written content');
+  assert.ok(entries.every((entry) => /^[a-f0-9]{64}$/.test(entry.sha256)), 'manifest sha256 values should be hex digests');
   assert.ok(entries.every((entry) => entry.timestamp), 'manifest entries should record timestamps');
   return { manifest, entries };
 }
@@ -187,10 +196,75 @@ function assertNoJunkFiles(dir) {
   );
 }
 
+function assertLightweightTomlSyntax(file) {
+  const lines = fs.readFileSync(file, 'utf8').split(/\r?\n/);
+  let inMultilineString = false;
+  for (const [index, raw] of lines.entries()) {
+    const line = raw.trim();
+    if (!line || line.startsWith('#')) continue;
+    const tripleQuoteCount = (line.match(/"""/g) || []).length;
+    if (inMultilineString) {
+      if (tripleQuoteCount > 0) inMultilineString = false;
+      continue;
+    }
+    if (/^\[[A-Za-z0-9_.-]+\]$/.test(line)) continue;
+    if (/^[A-Za-z0-9_.-]+\s*=/.test(line)) {
+      if (tripleQuoteCount % 2 === 1) inMultilineString = true;
+      continue;
+    }
+    assert.fail(`${file}:${index + 1} is not a recognized lightweight TOML line: ${raw}`);
+  }
+  assert.equal(inMultilineString, false, `${file} should close multiline strings`);
+}
+
+function npmPackDryRunFiles(t) {
+  const cacheDir = fs.mkdtempSync(path.join(os.tmpdir(), 'codex-uplift-npm-cache-'));
+  t.after(() => fs.rmSync(cacheDir, { recursive: true, force: true }));
+  const result = spawnSync('npm', ['pack', '--json', '--dry-run'], {
+    cwd: repoRoot,
+    encoding: 'utf8',
+    env: {
+      ...process.env,
+      npm_config_cache: cacheDir,
+    },
+  });
+  assertSuccess(result, 'npm pack --json --dry-run');
+  const stdout = result.stdout.trim();
+  const jsonStart = stdout.indexOf('[');
+  assert.notEqual(jsonStart, -1, `pack output should include JSON array\nstdout:\n${result.stdout}\nstderr:\n${result.stderr}`);
+  const pack = JSON.parse(stdout.slice(jsonStart))[0];
+  assert.ok(pack, 'pack output should describe one package');
+  return pack.files.map((file) => file.path).sort();
+}
+
 test('--help exits successfully', () => {
   const result = runCli(['--help']);
   assertSuccess(result, '--help');
   assertOutputIncludes(result, /Usage:/i, 'help output should include usage');
+});
+
+test('parser rejects invalid commands, modes, components, profiles, and missing values', (t) => {
+  const homes = makeTempHomes(t);
+
+  const invalidCommand = runCli(['wat']);
+  assert.equal(invalidCommand.status, 2);
+  assertOutputIncludes(invalidCommand, /Unknown command: wat/, 'invalid command should be rejected');
+
+  const invalidMode = runCliWithHomes(['install', '--mode', 'chaos'], homes);
+  assert.equal(invalidMode.status, 2);
+  assertOutputIncludes(invalidMode, /Unknown install mode: chaos/, 'invalid install mode should be rejected');
+
+  const invalidComponent = runCliWithHomes(['install', '--only', 'not-a-component'], homes);
+  assert.equal(invalidComponent.status, 2);
+  assertOutputIncludes(invalidComponent, /Unknown component ID\(s\): not-a-component/, 'invalid component should be rejected');
+
+  const invalidProfile = runCliWithHomes(['config', 'candidate', '--profile', 'not-a-profile'], homes);
+  assert.equal(invalidProfile.status, 2);
+  assertOutputIncludes(invalidProfile, /Unknown config profile: not-a-profile/, 'invalid config profile should be rejected');
+
+  const missingValue = runCli(['install', '--mode']);
+  assert.equal(missingValue.status, 2);
+  assertOutputIncludes(missingValue, /--mode requires a value/, 'missing flag value should be rejected');
 });
 
 test('install --mode classic writes standalone skills and a manifest in temp homes', (t) => {
@@ -207,6 +281,61 @@ test('install --mode classic writes standalone skills and a manifest in temp hom
   assert.ok(fs.existsSync(path.join(homes.codexHome, 'AGENTS.md')), 'classic install should write home AGENTS.md');
   assert.ok(fs.existsSync(manifestPath(homes.codexHome)), 'classic install should write manifest under the isolated Codex home');
   assertManifestHasEntries(homes.codexHome, 'classic');
+});
+
+test('component selection supports minimal, only, skip, components, and legacy aliases', (t) => {
+  const minimal = makeTempHomes(t);
+  assertSuccess(runCliWithHomes(['install', '--mode', 'minimal'], minimal), 'minimal install');
+  assert.ok(fs.existsSync(path.join(minimal.codexHome, 'AGENTS.md')), 'minimal should still install home AGENTS.md');
+  assert.ok(fs.existsSync(path.join(minimal.codexHome, 'config.fragment.codex-uplift-kit.toml')), 'minimal should install config candidate fragment');
+  assert.ok(fs.existsSync(manifestPath(minimal.codexHome)), 'minimal should write manifest');
+  assert.equal(fs.existsSync(path.join(minimal.userHome, '.agents', 'skills')), false, 'minimal should skip standalone skills');
+  assert.equal(fs.existsSync(path.join(minimal.codexHome, 'agents')), false, 'minimal should skip custom agents');
+  assert.equal(fs.existsSync(path.join(minimal.codexHome, 'hooks.json.sample')), false, 'minimal should skip hook samples');
+  assert.equal(fs.existsSync(path.join(minimal.codexHome, 'rules.codex-uplift-kit.candidate.md')), false, 'minimal should skip rule samples');
+  assertManifestHasEntries(minimal.codexHome, 'minimal');
+
+  const onlyPlugin = makeTempHomes(t);
+  assertSuccess(runCliWithHomes(['install', '--only', 'plugin'], onlyPlugin), '--only plugin install');
+  assert.ok(fs.existsSync(path.join(onlyPlugin.codexHome, 'plugins', 'codex-uplift-kit')), '--only plugin should install plugin payload');
+  assert.ok(fs.existsSync(path.join(onlyPlugin.userHome, '.agents', 'plugins', 'marketplace.json')), '--only plugin should write marketplace metadata');
+  assert.equal(fs.existsSync(path.join(onlyPlugin.codexHome, 'AGENTS.md')), false, '--only plugin should not install home AGENTS.md');
+  assert.equal(fs.existsSync(path.join(onlyPlugin.userHome, '.agents', 'skills')), false, '--only plugin should not install standalone skills');
+  assert.equal(fs.existsSync(manifestPath(onlyPlugin.codexHome)), false, '--only plugin should not write manifest unless manifest is selected');
+
+  const onlyCompaction = makeTempHomes(t);
+  assertSuccess(runCliWithHomes(['install', '--only', 'compaction-prompts,manifest'], onlyCompaction), '--only compaction-prompts install');
+  assert.deepEqual(
+    fs.readdirSync(path.join(onlyCompaction.codexHome, 'compact.candidate', 'prompts')).sort(),
+    expectedCompactionPromptNames(),
+    '--only compaction-prompts should install inactive prompt candidates',
+  );
+  assert.equal(fs.existsSync(path.join(onlyCompaction.codexHome, 'config.toml')), false, '--only compaction-prompts should not create active config.toml');
+  assert.ok(
+    manifestEntries(readManifest(onlyCompaction.codexHome)).every((entry) => ['compaction-prompts'].includes(entry.componentId)),
+    '--only compaction-prompts manifest entries should stay scoped to that component',
+  );
+
+  const skipped = makeTempHomes(t);
+  assertSuccess(runCliWithHomes(['install', '--skip', 'skills,hook-samples'], skipped), '--skip install');
+  assert.equal(fs.existsSync(path.join(skipped.userHome, '.agents', 'skills')), false, '--skip skills should omit standalone skills');
+  assert.equal(fs.existsSync(path.join(skipped.codexHome, 'hooks.json.sample')), false, '--skip hook-samples should omit hook sample');
+  assert.ok(fs.existsSync(path.join(skipped.codexHome, 'AGENTS.md')), '--skip should retain other classic components');
+
+  const addedPlugin = makeTempHomes(t);
+  const addedPluginResult = runCliWithHomes(['install', '--components', 'plugin'], addedPlugin);
+  assertSuccess(addedPluginResult, '--components plugin install');
+  assert.ok(fs.existsSync(path.join(addedPlugin.userHome, '.agents', 'skills')), '--components plugin should keep classic standalone skills');
+  assert.ok(fs.existsSync(path.join(addedPlugin.codexHome, 'plugins', 'codex-uplift-kit', 'skills')), '--components plugin should add plugin skills');
+  assertOutputIncludes(addedPluginResult, /duplicate skill names/i, '--components plugin should warn about duplicate skill names');
+
+  const legacy = makeTempHomes(t);
+  const legacyResult = runCliWithHomes(['install', '--install-plugin', '--skip-hooks', '--skip-agents'], legacy);
+  assertSuccess(legacyResult, 'legacy alias install');
+  assert.ok(fs.existsSync(path.join(legacy.codexHome, 'plugins', 'codex-uplift-kit')), '--install-plugin should add plugin component');
+  assert.equal(fs.existsSync(path.join(legacy.codexHome, 'hooks.json.sample')), false, '--skip-hooks should skip hook samples');
+  assert.equal(fs.existsSync(path.join(legacy.codexHome, 'agents')), false, '--skip-agents should skip custom agents');
+  assertOutputIncludes(legacyResult, /duplicate skill names/i, '--install-plugin should warn when standalone and plugin skills both install');
 });
 
 test('install --mode plugin skips standalone skills and writes resolvable marketplace metadata', (t) => {
@@ -450,6 +579,77 @@ test('dry-run candidate and project inspect commands do not write files', (t) =>
   assert.equal(fs.existsSync(projectReportDir), false, 'dry-run project inspect should not create repo-local project report directory');
 });
 
+test('config doctor reports observed fixture config without mutating it', (t) => {
+  const homes = makeTempHomes(t);
+  const configPath = path.join(homes.codexHome, 'config.toml');
+  fs.writeFileSync(configPath, [
+    'profile = "safe-interactive"',
+    'sandbox_mode = "workspace-write"',
+    'approval_policy = "on-request"',
+    'approvals_reviewer = "auto_review"',
+    '',
+  ].join('\n'));
+
+  const before = fs.readFileSync(configPath, 'utf8');
+  const result = runCliWithHomes(['config', 'doctor'], homes);
+  assertSuccess(result, 'config doctor');
+  assertOutputIncludes(result, /observed\s+config\.toml present/, 'config doctor should observe fixture config');
+  assertOutputIncludes(result, /observed\s+profile = safe-interactive/, 'config doctor should report profile');
+  assertOutputIncludes(result, /observed\s+sandbox_mode = workspace-write/, 'config doctor should report sandbox mode');
+  assertOutputIncludes(result, /observed\s+approval_policy = on-request/, 'config doctor should report approval policy');
+  assertOutputIncludes(result, /observed\s+approvals_reviewer = auto_review/, 'config doctor should report approvals reviewer');
+  assert.equal(fs.readFileSync(configPath, 'utf8'), before, 'config doctor should not mutate config.toml');
+});
+
+test('candidate seams write inactive candidates and RTK remains plan-only', (t) => {
+  for (const [command, candidateRoot] of [
+    [['project', 'candidate'], 'project.candidate'],
+    [['rules', 'candidate'], 'rules.candidate'],
+    [['hooks', 'candidate'], 'hooks.candidate'],
+  ]) {
+    const homes = makeTempHomes(t);
+    const result = runCliWithHomes(command, homes);
+    assertSuccess(result, `${command.join(' ')} candidate`);
+    const root = path.join(homes.codexHome, candidateRoot);
+    assert.ok(fs.existsSync(root), `${command.join(' ')} should create candidate root`);
+    assert.ok(
+      fs.readdirSync(root).some((file) => file.startsWith('README.md.candidate.')),
+      `${command.join(' ')} should write a timestamped README candidate`,
+    );
+    assert.equal(fs.existsSync(path.join(homes.codexHome, 'config.toml')), false, `${command.join(' ')} should not create active config.toml`);
+    assert.equal(fs.existsSync(path.join(homes.codexHome, 'hooks.json')), false, `${command.join(' ')} should not create active hooks.json`);
+  }
+
+  const rtkHomes = makeTempHomes(t);
+  const rtkPlan = runCliWithHomes(['rtk', 'evaluate', '--plan-only'], rtkHomes);
+  assertSuccess(rtkPlan, 'rtk evaluate --plan-only');
+  assertOutputIncludes(rtkPlan, /plan-only/i, 'RTK plan-only command should announce inactive plan-only behavior');
+  assert.deepEqual(listRelativeFiles(rtkHomes.codexHome), [], 'RTK plan-only should not write files');
+
+  const rtkActive = runCliWithHomes(['rtk', 'evaluate'], makeTempHomes(t));
+  assert.equal(rtkActive.status, 2);
+  assertOutputIncludes(rtkActive, /requires --plan-only/, 'RTK evaluate should reject active operation');
+});
+
+test('compact candidate generates all prompt candidates without active config mutation', (t) => {
+  const homes = makeTempHomes(t);
+  const result = runCliWithHomes(['compact', 'candidate'], homes);
+  assertSuccess(result, 'compact candidate');
+
+  const root = path.join(homes.codexHome, 'compact.candidate');
+  const promptRoot = path.join(root, 'prompts');
+  assert.deepEqual(fs.readdirSync(promptRoot).sort(), expectedCompactionPromptNames(), 'compact candidate should copy every release prompt template');
+  assert.ok(fs.existsSync(path.join(root, 'README.md')), 'compact candidate should write review README');
+  assert.ok(fs.existsSync(path.join(root, 'config.fragment.toml')), 'compact candidate should write inactive config fragment');
+  assert.equal(fs.existsSync(path.join(homes.codexHome, 'config.toml')), false, 'compact candidate should not create active config.toml');
+
+  const fragment = fs.readFileSync(path.join(root, 'config.fragment.toml'), 'utf8');
+  assert.match(fragment, /^# compact_prompt =/m, 'compact config fragment should include commented compact_prompt example');
+  assert.match(fragment, /^# experimental_compact_prompt_file =/m, 'compact config fragment should include commented file example');
+  assert.doesNotMatch(fragment, /^\s*compact_prompt\s*=/m, 'compact candidate should not activate compact_prompt');
+  assert.doesNotMatch(fragment, /^\s*experimental_compact_prompt_file\s*=/m, 'compact candidate should not activate experimental compact prompt file');
+});
+
 test('config candidates generate profile-scoped posture content', (t) => {
   const reviewOnly = readGeneratedConfigCandidate(t, 'review-only');
   assertProfileCandidateShape(reviewOnly, 'review-only');
@@ -490,17 +690,20 @@ test('config candidates generate profile-scoped posture content', (t) => {
 });
 
 test('all config candidates avoid active profile activation and legacy network features', (t) => {
-  for (const profile of [
-    'review-only',
-    'safe-interactive',
-    'autonomous-audited',
-    'install-window',
-    'net-limited',
-    'full-access-reviewed',
-    'external-isolated',
-    'ci-noninteractive',
-  ]) {
-    assertProfileCandidateShape(readGeneratedConfigCandidate(t, profile), profile);
+  const expectations = {
+    'review-only': [/^sandbox_mode = "read-only"$/m, /^approvals_reviewer = "user"$/m],
+    'safe-interactive': [/^network_access = false$/m],
+    'autonomous-audited': [/^default_permissions = "codex-uplift-autonomous"$/m],
+    'install-window': [/^network_access = true$/m],
+    'net-limited': [/^network_access = true$/m],
+    'full-access-reviewed': [/^sandbox_mode = "danger-full-access"$/m],
+    'external-isolated': [/^network_access = false$/m],
+    'ci-noninteractive': [/^approval_policy = "never"$/m, /^network_access = false$/m],
+  };
+  for (const [profile, patterns] of Object.entries(expectations)) {
+    const body = readGeneratedConfigCandidate(t, profile);
+    assertProfileCandidateShape(body, profile);
+    for (const pattern of patterns) assert.match(body, pattern, `${profile} should include ${pattern}`);
   }
 });
 
@@ -541,4 +744,50 @@ test('package hygiene templates and installed plugin copy exclude platform junk'
   const homes = makeTempHomes(t);
   assertSuccess(runCliWithHomes(['install', '--mode', 'plugin'], homes), 'plugin install for hygiene');
   assertNoJunkFiles(path.join(homes.codexHome, 'plugins', 'codex-uplift-kit'));
+});
+
+test('package dry-run contains only expected release payload', (t) => {
+  const files = npmPackDryRunFiles(t);
+  const allowedRootFiles = new Set([
+    'CHANGELOG.md',
+    'LICENSE',
+    'ORCHESTRATOR_AGENTS_FRAGMENT.md',
+    'ORCHESTRATOR_INSTALL_PROMPT.md',
+    'README.md',
+    'SECURITY.md',
+    'package.json',
+  ]);
+  for (const file of files) {
+    assert.ok(
+      allowedRootFiles.has(file) || file.startsWith('bin/') || file.startsWith('templates/'),
+      `${file} should be part of the explicit release payload`,
+    );
+    assert.equal(file.startsWith('.planning/'), false, `${file} should not include planning provenance`);
+    assert.equal(file.startsWith('.codex-uplift/'), false, `${file} should not include local release artifacts`);
+    assert.equal(file.includes('_late-orchestration-recovery'), false, `${file} should not include recovery package files`);
+    assert.equal(file.includes('.DS_Store'), false, `${file} should not include OS junk`);
+    assert.equal(file.endsWith('.tgz'), false, `${file} should not include package archives`);
+    assert.equal(file.startsWith('tmp/'), false, `${file} should not include temp files`);
+  }
+  assert.ok(files.includes('bin/codex-uplift-init.mjs'), 'package should include CLI bin');
+  assert.ok(files.includes('templates/compaction-prompts/general-continuation.md'), 'package should include compaction prompt release templates');
+  assert.ok(files.includes('README.md'), 'package should include README');
+  assert.ok(files.includes('LICENSE'), 'package should include LICENSE');
+  assert.ok(files.includes('CHANGELOG.md'), 'package should include CHANGELOG');
+  assert.ok(files.includes('SECURITY.md'), 'package should include SECURITY');
+});
+
+test('template JSON, hooks, TOML fragments, and compaction prompts are valid enough for alpha payload', () => {
+  for (const file of [
+    path.join(templatesDir, 'config', 'config.fragment.toml'),
+    ...listFilesRecursive(path.join(templatesDir, 'agents')).filter((candidate) => candidate.endsWith('.toml')),
+  ]) {
+    assertLightweightTomlSyntax(file);
+  }
+
+  for (const prompt of expectedCompactionPromptNames()) {
+    const body = fs.readFileSync(path.join(templatesDir, 'compaction-prompts', prompt), 'utf8');
+    assert.match(body, /^#\s+\S/m, `${prompt} should have a Markdown heading`);
+    assert.doesNotMatch(body, /^\s*compact_prompt\s*=/m, `${prompt} should not include active config`);
+  }
 });

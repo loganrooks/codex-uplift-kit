@@ -213,6 +213,8 @@ A v0.2 release candidate requires:
 - `CODEX_UPLIFT_ROADMAP.md` updated;
 - `.codex-uplift/release-candidate-review.md` created;
 - manual approval before npm publish, git tag, GitHub release, or remote push.
+- recommended alpha version documented as `0.2.0-alpha.0` while
+  `package.json` stays `0.1.0` until manual approval.
 
 ### Late orchestration recovery gate
 
@@ -234,7 +236,8 @@ Implemented in the local package:
 - candidate-only seams for project/hooks/rules/compact/RTK;
 - `verify`;
 - plugin path generation and validation for default personal installs;
-- duplicate skill avoidance by default and hybrid duplicate warning;
+- duplicate skill avoidance by default and duplicate warning whenever standalone
+  plus plugin skills are explicitly selected;
 - manifest merge preservation;
 - safe uninstall of unmodified package-owned files only;
 - safety-critical `node:test` suite.
@@ -243,7 +246,11 @@ Release gates passed locally:
 
 - `npm test`;
 - `npm run smoke`;
+- `npm run verify`;
+- `npm run pack:dry-run`;
+- `npm run release:check`;
 - `npm pack --dry-run`;
+- `git diff --check`;
 - `npm publish --dry-run`;
 - temp-home inspect/install/config/status/uninstall checks;
 - docs updated;
@@ -255,15 +262,20 @@ Recovery gate status:
 - late orchestration/delegation/worktree docs copied into the parent planning suite;
 - retrospective orchestration artifacts created;
 - config/posture semantic review found profile-candidate mismatches, now patched with generated-content tests;
+- public hygiene files and CI quality gates added;
+- recovery package applied, copied into the parent planning suite where relevant,
+  captured in repo-local `.codex-uplift/` artifacts, and removed after capture;
 - public docs consistency pass complete;
 - verification rerun after recovery patches.
 
 Manual gates still pending:
 
 - package version bump from `0.1.0` to the approved v0.2 release version;
+- recommended alpha version is `0.2.0-alpha.0`;
 - npm publish;
 - git tag;
 - remote push;
+- first GitHub-hosted CI observation;
 - live Codex plugin restart/install verification if desired before stable
   release.
 

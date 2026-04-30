@@ -13,17 +13,21 @@ Expected location inside the implementation repo:
 .planning/initiatives/codex-uplift-current-design-suite/
 ```
 
-## 1. Recovery override
+## 1. Recovery status
 
-Before normal onboarding, check whether this directory contains:
+The late orchestration recovery package has been applied. The temporary
+recovery organizer directory was removed during release hardening after the
+relevant docs were copied into this parent planning suite and the outcome was
+captured in repo-local `.codex-uplift/` artifacts.
+
+If a future checkout contains this legacy path:
 
 ```text
 _late-orchestration-recovery/START_HERE_RECOVERY.md
 ```
 
-If that file exists and recovery has not been marked applied, read it before the normal orchestrator entrypoint.
-
-The recovery folder is an active initiative artifact while recovery is pending. Do not `.gitignore` it during recovery. Track it until the recovery outcome is recorded, then either archive it as provenance or delete it in a deliberate cleanup commit.
+read it only if recovery is explicitly marked pending. Otherwise normal
+onboarding begins below.
 
 Do not track local archive or scratch byproducts:
 
@@ -41,7 +45,7 @@ tmp/
 
 ## 2. Normal orchestrator entrypoint
 
-If no recovery package is pending, start with:
+Start with:
 
 ```text
 CODEX_UPLIFT_ORCHESTRATOR_ENTRYPOINT.md
@@ -96,13 +100,15 @@ CODEX_UPLIFT_V0_2_OPERATIONAL_SPEC.md
 Do not perform any of the following without explicit user approval:
 
 - publish to npm;
-- bump the package version for release;
+- bump the package version for release, including the recommended alpha version `0.2.0-alpha.0`;
 - create or push git tags;
 - push a remote branch;
 - create a GitHub release;
 - mutate real user-home Codex configuration;
 - enable active hooks, rules, full-access profiles, telemetry, or RTK;
 - begin v0.3 implementation.
+
+Current public release posture: `package.json` remains `0.1.0`; `0.2.0-alpha.0` is the recommended prerelease version only after the manual gate.
 
 ## 7. Living state and roadmap
 

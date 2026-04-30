@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  release-gates:
+    name: Release gates on Node ${{ matrix.node-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version:
+          - 18
+          - 20
+          - 22
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Test
+        run: npm test
+
+      - name: Smoke
+        run: npm run smoke
+
+      - name: Verify
+        run: npm run verify
+
+      - name: Pack dry run
+        run: npm run pack:dry-run
+
+      - name: Diff whitespace check
+        run: git diff --check

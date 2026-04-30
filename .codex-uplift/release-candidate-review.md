@@ -11,7 +11,7 @@ Date: 2026-04-30
 
 ## Proposed Version
 
-Proposed release version: `0.2.0`.
+Recommended alpha release version after manual approval: `0.2.0-alpha.0`.
 
 Current `package.json` version: `0.1.0`.
 
@@ -58,6 +58,8 @@ Working tree contains the v0.2 release-candidate implementation and release arti
 - Install modes and component selection.
 - Plugin mode skips standalone skills by default.
 - Hybrid mode explicitly installs both standalone and plugin skills and reports duplicate skill names.
+- Legacy/component selections that install both standalone and plugin skills also
+  report duplicate skill names.
 - Personal plugin marketplace path defaults to `./.codex/plugins/codex-uplift-kit` under user-home marketplace-root semantics.
 - Custom Codex home outside user home uses an explicit absolute-path fallback with warning.
 - Manifest writes with package-owned file hashes.
@@ -95,17 +97,22 @@ Working tree contains the v0.2 release-candidate implementation and release arti
 
 ## Tests Run
 
-- PASS `npm test` — 16 tests.
+- PASS `npm test` — 23 tests.
 - PASS `npm run smoke`.
 - PASS `node bin/codex-uplift-init.mjs --help`.
 - PASS `node bin/codex-uplift-init.mjs verify`.
+- PASS `npm run verify`.
 - PASS `npm_config_cache=/private/tmp/codex-uplift-npm-cache npm pack --dry-run`.
+- PASS `npm run pack:dry-run`.
+- PASS `npm run release:check`.
 - PASS `npm_config_cache=/private/tmp/codex-uplift-npm-cache npm publish --dry-run`.
 - PASS `git diff --check`.
 - PASS temp-home `inspect`.
 - PASS temp-home `install --dry-run`.
 - PASS temp-home `install --mode plugin`.
 - PASS temp-home `config candidate --profile safe-interactive`.
+- PASS temp-home `compact candidate`.
+- PASS temp-home no active `config.toml` after compact candidate.
 - PASS manifest `status`.
 - PASS manifest `uninstall --dry-run`.
 
@@ -119,7 +126,7 @@ Working tree contains the v0.2 release-candidate implementation and release arti
 
 ## Package Contents Summary
 
-`npm pack --dry-run` reported 24 files, package size about 20.9 kB, unpacked size about 77.7 kB. Contents include bin, templates, README, and orchestrator prompts. `.DS_Store` and private planning artifacts were not included in the tarball.
+`npm run pack:dry-run` reported 33 files, package size about 25.4 kB, unpacked size about 91.6 kB. Contents include bin, templates, compaction prompt templates, README, CHANGELOG, SECURITY, LICENSE, and orchestrator prompts. `.DS_Store`, `.planning`, `.codex-uplift`, recovery-package files, archives, and temp files were not included in the tarball.
 
 ## Install And Uninstall Verification
 
@@ -133,17 +140,28 @@ Working tree contains the v0.2 release-candidate implementation and release arti
 - Dry-run and real uninstall safety covered by tests.
 - Modified files are preserved by uninstall.
 
+## Manual Live-Client Checklist
+
+- Optional: install into a temporary or explicitly approved real user home, then
+  restart Codex and confirm local plugin mode appears.
+- Manually review generated config/profile candidates before merging anything
+  into active `config.toml`.
+- Keep real user-home install optional and explicitly user-approved.
+
 ## Known Risks
 
 - Package version remains `0.1.0` until the manual release version bump.
-- Candidate-only project/rules/hooks/compact commands are minimal seam implementations rather than full generators.
+- Public CI/release gate files were added for alpha hardening; CI execution on GitHub has not yet run in this local pass.
+- Candidate-only project/rules/hooks commands are minimal seam implementations;
+  `compact candidate` now generates reviewable prompt candidates and an inactive
+  config fragment.
 - Custom Codex home outside user-home marketplace root uses an absolute local `source.path` fallback. This is explicit and warned, but should be probed in the live Codex client before documenting as fully portable.
 - Exact effective config behavior across app/CLI/IDE/managed layers remains deferred.
 - Profile candidates now use profile-scoped TOML and current documented network/reviewer keys, but local Codex runtime validation of every candidate key remains a v0.3 probe.
 
 ## Manual Gates Still Closed
 
-Do not run the version bump, npm publish, git tag, remote push, GitHub release creation, real user-home install, active hook/rule enablement, full-access profile activation, telemetry enablement, RTK activation, or v0.3 implementation without explicit user approval.
+Do not run the version bump to `0.2.0-alpha.0`, npm publish, git tag, remote push, GitHub release creation, real user-home install, active hook/rule enablement, full-access profile activation, telemetry enablement, RTK activation, or v0.3 implementation without explicit user approval.
 
 ## Release Recommendation
 
@@ -151,4 +169,4 @@ Status: release candidate acceptable after patches.
 
 Recommendation: `ship-alpha`.
 
-Rationale: late orchestration recovery found and fixed material config/posture candidate mismatches. v0.2 now has the setup-assistant baseline, safety tests, profile-candidate content tests, manifest/status/uninstall, corrected plugin/duplicate behavior, and reconciled orchestration provenance. Keep alpha posture until a live Codex plugin install/restart check and manual package version bump are approved.
+Rationale: late orchestration recovery found and fixed material config/posture candidate mismatches. v0.2 now has the setup-assistant baseline, safety tests, profile-candidate content tests, manifest/status/uninstall, corrected plugin/duplicate behavior, release quality gates, and reconciled orchestration provenance. Keep alpha posture until a live Codex plugin install/restart check, GitHub CI observation, and manual package version bump are approved.

@@ -40,8 +40,12 @@ Run or record why not run:
 ```bash
 npm test
 npm run smoke
+npm run verify
+npm run pack:dry-run
+npm run release:check
 npm pack --dry-run
 npm publish --dry-run
+git diff --check
 node bin/codex-uplift-init.mjs --help
 node bin/codex-uplift-init.mjs inspect --home "$TMP_CODEX" --user-home "$TMP_USER"
 node bin/codex-uplift-init.mjs install --dry-run --home "$TMP_CODEX" --user-home "$TMP_USER"
@@ -82,6 +86,12 @@ Verify in temporary homes:
 - status reports installed files;
 - uninstall removes only package-owned unmodified files.
 
+Manual live-client verification remains separate from automation:
+
+- local plugin mode appears after a Codex restart;
+- generated profile candidates can be manually reviewed before merge;
+- real user-home install remains optional and explicitly user-approved.
+
 ## 5. Safety verification
 
 Confirm:
@@ -118,6 +128,10 @@ Confirm before release approval:
 - generated profile candidates use profile-scoped TOML and do not activate a default profile;
 - golden/content tests for profile candidates added or explicitly deferred;
 - README/release docs no longer contain stale v0.1/v0.2 command-state claims;
+- public repository hygiene files exist: `LICENSE`, `CHANGELOG.md`, `SECURITY.md`, `.editorconfig`, and `.github/workflows/ci.yml`;
+- CI runs on push and pull_request to `main` with low permissions and Node 18/20/22 matrix;
+- recovery folder disposition is recorded as applied, copied into parent
+  planning artifacts, captured in `.codex-uplift/`, and removed after capture;
 - verification rerun after recovery patches.
 
 ## 8. Commit guidance
@@ -164,7 +178,7 @@ If GitHub release automation is desired, prepare a draft release note first and 
 The release checkpoint should end with one of these options:
 
 - `ship v0.2.0` — publish stable.
-- `ship v0.2.0-alpha.N` — publish prerelease.
+- `ship v0.2.0-alpha.N` — publish prerelease. Current recommended alpha is `0.2.0-alpha.0`.
 - `hold` — do not publish; list blockers.
 - `revise` — continue implementation; list next slice.
 

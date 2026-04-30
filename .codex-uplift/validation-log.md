@@ -154,3 +154,46 @@ Date: 2026-04-30
 - No live Codex plugin restart/install probe was run.
 - No real user-home install was run.
 - No active hooks/rules/full-access/telemetry/RTK enablement was run.
+
+## Release Quality Gate Hardening
+
+- Updated `package.json` description from bootstrap-kit wording to setup/posture assistant wording.
+- Added npm scripts:
+  - `verify` runs `node bin/codex-uplift-init.mjs verify`.
+  - `pack:dry-run` runs `npm pack --json --dry-run` with `/tmp/codex-uplift-npm-cache`.
+  - `release:check` chains `npm test`, `npm run smoke`, `npm run verify`, `npm run pack:dry-run`, and `git diff --check`.
+- Added public repo hygiene files: `LICENSE`, `CHANGELOG.md`, `SECURITY.md`, `.editorconfig`, and `.github/workflows/ci.yml`.
+- Added CI workflow for push/pull_request to `main`, low `contents: read` permissions, and Node 18/20/22 matrix.
+- Updated README with implemented command surface, alpha gate status, manual gates, and candidate-only safety boundaries.
+- Verified `npm run release:check` locally: `npm test`, `npm run smoke`, `npm run verify`, `npm run pack:dry-run`, and `git diff --check` passed.
+- Recommended release version is now documented as `0.2.0-alpha.0`; `package.json` remains `0.1.0` until manual release approval.
+- Recovery folder disposition at that worker boundary: applied and retained for
+  provenance, with cleanup scheduled for the orchestrator after capture.
+
+## Release Hardening Final Integration
+
+- Expanded `npm test` from 16 to 23 tests covering parser errors, component
+  selection, config doctor, inactive candidate seams, compact candidate output,
+  manifest hash shape, package allowlisting, and lightweight template validity.
+- Updated `pack:dry-run` to use JSON output and added package allowlist
+  assertions around the dry-run tarball contents.
+- Restored compaction prompts into planning provenance and release templates,
+  then verified `compact candidate` writes prompt candidates plus an inactive
+  config fragment without creating active `config.toml`.
+- Removed local `.DS_Store` byproducts.
+- Removed `_late-orchestration-recovery/` after recovery capture and regenerated
+  planning `MANIFEST.md`.
+- PASS `npm test` — 23 tests.
+- PASS `npm run pack:dry-run` — 33 package entries, package size about 25.4 kB,
+  unpacked size about 91.6 kB.
+- PASS `npm run release:check` — 23 tests, smoke, verify, pack dry run, and
+  `git diff --check` passed.
+- PASS `npm_config_cache=/tmp/codex-uplift-npm-cache npm publish --dry-run`.
+- PASS temp-home `inspect`.
+- PASS temp-home `install --dry-run`.
+- PASS temp-home `install --mode plugin`.
+- PASS temp-home `config candidate --profile safe-interactive`.
+- PASS temp-home `compact candidate`.
+- PASS temp-home no active `config.toml` after compact candidate.
+- PASS temp-home `status`.
+- PASS temp-home `uninstall --dry-run`.
