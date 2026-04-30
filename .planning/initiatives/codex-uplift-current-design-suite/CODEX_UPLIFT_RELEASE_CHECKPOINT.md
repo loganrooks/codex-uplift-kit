@@ -108,7 +108,19 @@ Confirm docs explain:
 - release and manual gates;
 - how to uninstall.
 
-## 7. Commit guidance
+## 7. Late orchestration recovery checks
+
+Confirm before release approval:
+
+- late orchestration recovery applied or explicitly declined;
+- retrospective `.codex-uplift/` orchestration artifacts created;
+- config/posture semantic review complete;
+- generated profile candidates use profile-scoped TOML and do not activate a default profile;
+- golden/content tests for profile candidates added or explicitly deferred;
+- README/release docs no longer contain stale v0.1/v0.2 command-state claims;
+- verification rerun after recovery patches.
+
+## 8. Commit guidance
 
 If commits are authorized, make scoped commits. Suggested order:
 
@@ -130,7 +142,7 @@ Verification:
 Boundary:
 ```
 
-## 8. Release commands — manual only
+## 9. Release commands — manual only
 
 Do not run these unless the user approves at the checkpoint:
 
@@ -147,7 +159,7 @@ git push origin v<version>
 
 If GitHub release automation is desired, prepare a draft release note first and ask the user to review.
 
-## 9. User release decision
+## 10. User release decision
 
 The release checkpoint should end with one of these options:
 

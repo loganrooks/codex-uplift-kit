@@ -21,22 +21,29 @@ Read the docs in this order:
 1. `CODEX_UPLIFT_DOC_SUITE_INDEX.md` — map and precedence.
 2. `CODEX_UPLIFT_STATE.md` — current state and v0.1/v0.2 handoff.
 3. `CODEX_UPLIFT_ROADMAP.md` — concrete v0.1/v0.2/v0.3 roadmap.
-4. `CODEX_UPLIFT_SOURCE_BASELINE.md` — auditable platform/source baseline.
-5. `CODEX_UPLIFT_RELEASE_GOVERNANCE.md` — release slicing, deferral discipline, and acceptance gates.
-6. `CODEX_UPLIFT_AUTORUN_CONTRACT.md` — what may run automatically and what requires approval.
-7. `CODEX_UPLIFT_RELEASE_CHECKPOINT.md` — manual release checkpoint.
-8. `CODEX_UPLIFT_V0_2_OPERATIONAL_SPEC.md` — v0.2 build contract.
-9. `CODEX_UPLIFT_ROADMAP_DEFERRAL_REGISTER.md` — named deferrals; no silent out-of-scope claims.
-10. `CODEX_UPLIFT_NON_FORECLOSURE_MATRIX.md` — what v0.2 must not close off.
-11. `CODEX_UPLIFT_ARCHITECTURE_SEAMS.md` — extension seams and anti-closure constraints.
-12. `CODEX_UPLIFT_POSTURE_PROFILES_SPEC.md` — sandbox/approval/permission posture semantics.
-13. `CODEX_UPLIFT_CONTEXT_EFFICIENCY_STRATEGY.md` — token/context strategy.
-14. `CODEX_UPLIFT_COMPACTION_PROMPT_STRATEGY.md` and `CODEX_UPLIFT_CONTEXT_COMPACTION_EVAL_PLAN.md` — compaction prompt candidates and evaluation.
-15. `CODEX_UPLIFT_RTK_EVALUATION_PROTOCOL.md` — RTK evaluation-only posture.
-16. `CODEX_UPLIFT_V0_3_PLUS_HORIZON.md` — future-aware design implications.
-17. `CODEX_UPLIFT_STATUS_AND_HANDOFF.md` — short handoff summary.
+4. `CODEX_UPLIFT_ORCHESTRATION_DOCS_RECONCILIATION.md` — late orchestration-doc provenance and recovery rule.
+5. `CODEX_UPLIFT_PARTIAL_IMPLEMENTATION_RETROFIT_HANDOFF.md` — retrofit flow if implementation already advanced before these docs existed.
+6. `CODEX_UPLIFT_ORCHESTRATION_AND_DELEGATION_PLAN.md` — orchestrator and delegation ownership model.
+7. `CODEX_UPLIFT_ORCHESTRATOR_DELEGATION_ADDENDUM.md` — delegation artifacts and review-pass expectations.
+8. `CODEX_UPLIFT_WORKTREE_ORCHESTRATION_ADDENDUM.md` — worktree, ownership, checkpoint, and integration discipline.
+9. `CODEX_UPLIFT_SOURCE_BASELINE.md` — auditable platform/source baseline.
+10. `CODEX_UPLIFT_RELEASE_GOVERNANCE.md` — release slicing, deferral discipline, and acceptance gates.
+11. `CODEX_UPLIFT_AUTORUN_CONTRACT.md` — what may run automatically and what requires approval.
+12. `CODEX_UPLIFT_RELEASE_CHECKPOINT.md` — manual release checkpoint.
+13. `CODEX_UPLIFT_V0_2_OPERATIONAL_SPEC.md` — v0.2 build contract.
+14. `CODEX_UPLIFT_ROADMAP_DEFERRAL_REGISTER.md` — named deferrals; no silent out-of-scope claims.
+15. `CODEX_UPLIFT_NON_FORECLOSURE_MATRIX.md` — what v0.2 must not close off.
+16. `CODEX_UPLIFT_ARCHITECTURE_SEAMS.md` — extension seams and anti-closure constraints.
+17. `CODEX_UPLIFT_POSTURE_PROFILES_SPEC.md` — sandbox/approval/permission posture semantics.
+18. `CODEX_UPLIFT_CONTEXT_EFFICIENCY_STRATEGY.md` — token/context strategy.
+19. `CODEX_UPLIFT_COMPACTION_PROMPT_STRATEGY.md` and `CODEX_UPLIFT_CONTEXT_COMPACTION_EVAL_PLAN.md` — compaction prompt candidates and evaluation.
+20. `CODEX_UPLIFT_RTK_EVALUATION_PROTOCOL.md` — RTK evaluation-only posture.
+21. `CODEX_UPLIFT_V0_3_PLUS_HORIZON.md` — future-aware design implications.
+22. `CODEX_UPLIFT_STATUS_AND_HANDOFF.md` — short handoff summary.
 
 `REVIEW_RESPONSE.md` and `REVIEW_RESPONSE_V0_2_ADDENDUM.md` are review-history artifacts. They explain why the suite moved in this direction, but they are not the implementation source of truth.
+
+If implementation already advanced before the orchestration/delegation/worktree documents were present, do not restart v0.2. Create the retrospective `.codex-uplift/` artifacts required by `CODEX_UPLIFT_PARTIAL_IMPLEMENTATION_RETROFIT_HANDOFF.md`, run targeted hardening reviews, and stop at the manual release checkpoint.
 
 ## 2. First orchestrator task
 

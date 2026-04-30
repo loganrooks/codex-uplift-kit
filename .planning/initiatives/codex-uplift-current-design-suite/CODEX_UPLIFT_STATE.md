@@ -46,6 +46,23 @@ Not yet released:
 - no npm publish, git tag, remote push, or real user-home install has been performed;
 - `.codex-uplift/release-candidate-review.md` records the manual release checkpoint.
 
+## 0.2 Late orchestration recovery status
+
+Status: applied.
+
+Reason: orchestration/delegation/worktree documents were missing from the planning suite during the first v0.2 implementation pass.
+
+Required follow-up:
+
+- copied and indexed the late orchestration/delegation/worktree docs;
+- created retrospective `.codex-uplift/` orchestration artifacts;
+- ran config/posture semantic review;
+- patched profile candidate generation and content tests;
+- updated release checkpoint and public docs;
+- reran verification after hardening patches.
+
+Release impact: the recovery pass found and fixed a material config/posture candidate mismatch. The v0.2 alpha candidate is prepared after late orchestration recovery; manual release decision pending.
+
 ## 1. What v0.1 means
 
 v0.1 should be treated as a **bootstrap-slice prototype**, not as a polished npm release unless the implementation repo proves otherwise.

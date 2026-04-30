@@ -307,7 +307,11 @@ Hooks are Codex lifecycle guardrails. They can reduce risk, but they are not a c
 
 Also consider adding a `PermissionRequest` hook sample because that event is better aligned with approval policy control than trying to catch everything in `PreToolUse`.
 
-## Recommended Roadmap
+## v0.2 Implementation Note
+
+The roadmap recommendations below were written against the earlier v0.1-style package. The v0.2 release-candidate pass has since implemented the broad command surface, install modes, manifest/status/uninstall, config candidate/doctor basics, duplicate-skill handling, plugin path generation, and safety tests. Keep the remaining sections as historical review context; current release readiness should be checked against `.codex-uplift/release-candidate-review.md`, `.codex-uplift/test-log.md`, and the planning-suite state/roadmap.
+
+## Historical Recommended Roadmap
 
 ### 1. Add Config Doctor And Candidate Generation
 

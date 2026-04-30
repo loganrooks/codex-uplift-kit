@@ -109,3 +109,48 @@ Date: 2026-04-30
 - User clarified that this role should remain orchestration-focused: own specs/plans/review/integration and delegate implementation work rather than doing low-level implementation locally.
 - User clarified exploration agents should usually be no more than medium reasoning, reserving high/xhigh for genuinely demanding tasks.
 - Orchestrator response: keep exploration prompts precise enough to mitigate medium-reasoning pitfalls through evidence requirements, output schemas, known-risk checks, and explicit unknown boundaries.
+
+## Late Orchestration Recovery
+
+- Read `.planning/initiatives/codex-uplift-current-design-suite/_late-orchestration-recovery/START_HERE_RECOVERY.md`.
+- Recorded starting worktree state in `.codex-uplift/worktree-state.md`.
+- Moved the recovery package into `.planning/initiatives/codex-uplift-current-design-suite/_late-orchestration-recovery/`.
+- Copied missing orchestration/delegation/worktree docs into the parent planning suite.
+- Updated suite index, orchestrator entrypoint, state, roadmap, release checkpoint, and README/review/release docs.
+- Created retrospective artifacts:
+  - `.codex-uplift/post-implementation-orchestration-reconciliation.md`
+  - `.codex-uplift/delegation-retrospective.md`
+  - `.codex-uplift/file-ownership-map.md`
+  - `.codex-uplift/integration-ledger.md`
+  - `.codex-uplift/checkpoint-ledger.md`
+- Ran delegated config/posture semantic review and docs consistency review.
+- Verified current OpenAI config reference for:
+  - top-level `profile` as default profile;
+  - `profiles.<name>.*` profile-scoped overrides;
+  - `approval_policy = "on-failure"` deprecation;
+  - `approvals_reviewer = "user" | "auto_review"`;
+  - `sandbox_workspace_write.network_access` key shape.
+- Accepted and integrated the bounded worker patch for profile-scoped candidate generation and content tests.
+
+## Late Recovery Verification
+
+- PASS `npm test` — 16 tests.
+- PASS `npm run smoke`.
+- PASS `node bin/codex-uplift-init.mjs --help`.
+- PASS `node bin/codex-uplift-init.mjs verify`.
+- PASS `npm_config_cache=/private/tmp/codex-uplift-npm-cache npm pack --dry-run`.
+- PASS `npm_config_cache=/private/tmp/codex-uplift-npm-cache npm publish --dry-run`.
+- PASS `git diff --check`.
+- PASS temp-home `inspect`.
+- PASS temp-home `install --dry-run`.
+- PASS temp-home `install --mode plugin`.
+- PASS temp-home `config candidate --profile safe-interactive`.
+- PASS manifest `status`.
+- PASS manifest `uninstall --dry-run`.
+
+## Late Recovery Remaining Unknowns
+
+- No live Codex app/CLI profile activation probe was run.
+- No live Codex plugin restart/install probe was run.
+- No real user-home install was run.
+- No active hooks/rules/full-access/telemetry/RTK enablement was run.

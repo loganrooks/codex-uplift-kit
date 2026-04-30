@@ -89,6 +89,24 @@ function listFilesRecursive(dir) {
   return out.sort();
 }
 
+function readGeneratedConfigCandidate(t, profile) {
+  const homes = makeTempHomes(t);
+  const result = runCliWithHomes(['config', 'candidate', '--profile', profile], homes);
+  assertSuccess(result, `config candidate ${profile}`);
+  const candidateDir = path.join(homes.codexHome, 'config.candidate');
+  const candidates = fs.readdirSync(candidateDir)
+    .filter((file) => file.startsWith(`${profile}.config.toml.candidate.`));
+  assert.equal(candidates.length, 1, `${profile} should create one config candidate`);
+  return fs.readFileSync(path.join(candidateDir, candidates[0]), 'utf8');
+}
+
+function assertProfileCandidateShape(body, profile) {
+  const escapedProfile = profile.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  assert.match(body, new RegExp(`^\\[profiles\\.${escapedProfile}\\]$`, 'm'), `${profile} should use a profile-scoped table`);
+  assert.doesNotMatch(body, /^\s*profile\s*=/m, `${profile} should not activate a top-level default profile`);
+  assert.doesNotMatch(body, /^\s*\[features\]\s*\r?\n\s*network_access\s*=/m, `${profile} should not use legacy feature-scoped network access`);
+}
+
 function listRelativeFiles(dir) {
   return listFilesRecursive(dir).map((file) => path.relative(dir, file)).sort();
 }
@@ -430,6 +448,60 @@ test('dry-run candidate and project inspect commands do not write files', (t) =>
   assert.equal(fs.existsSync(path.join(homes.codexHome, 'hooks.candidate')), false, 'dry-run hooks candidate should not create hooks candidate directory');
   assert.equal(fs.existsSync(path.join(homes.codexHome, 'compact.candidate')), false, 'dry-run compact candidate should not create compact candidate directory');
   assert.equal(fs.existsSync(projectReportDir), false, 'dry-run project inspect should not create repo-local project report directory');
+});
+
+test('config candidates generate profile-scoped posture content', (t) => {
+  const reviewOnly = readGeneratedConfigCandidate(t, 'review-only');
+  assertProfileCandidateShape(reviewOnly, 'review-only');
+  assert.match(reviewOnly, /^sandbox_mode = "read-only"$/m);
+  assert.match(reviewOnly, /^approval_policy = "on-request"$/m);
+  assert.match(reviewOnly, /^approvals_reviewer = "user"$/m);
+  assert.match(reviewOnly, /^model_reasoning_effort = "high"$/m);
+  assert.doesNotMatch(reviewOnly, /workspace-write/);
+  assert.doesNotMatch(reviewOnly, /auto_review/);
+  assert.doesNotMatch(reviewOnly, /sandbox_workspace_write/);
+
+  const safeInteractive = readGeneratedConfigCandidate(t, 'safe-interactive');
+  assertProfileCandidateShape(safeInteractive, 'safe-interactive');
+  assert.match(safeInteractive, /^sandbox_mode = "workspace-write"$/m);
+  assert.match(safeInteractive, /^approval_policy = "on-request"$/m);
+  assert.match(safeInteractive, /^approvals_reviewer = "user"$/m);
+  assert.match(safeInteractive, /^allow_login_shell = false$/m);
+  assert.match(safeInteractive, /^\[profiles\.safe-interactive\.sandbox_workspace_write\]$/m);
+  assert.match(safeInteractive, /^network_access = false$/m);
+
+  const autonomousAudited = readGeneratedConfigCandidate(t, 'autonomous-audited');
+  assertProfileCandidateShape(autonomousAudited, 'autonomous-audited');
+  assert.match(autonomousAudited, /^sandbox_mode = "workspace-write"$/m);
+  assert.match(autonomousAudited, /^approval_policy = "on-request"$/m);
+  assert.match(autonomousAudited, /^approvals_reviewer = "auto_review"$/m);
+  assert.match(autonomousAudited, /^allow_login_shell = false$/m);
+  assert.match(autonomousAudited, /^default_permissions = "codex-uplift-autonomous"$/m);
+  assert.match(autonomousAudited, /^\[profiles\.autonomous-audited\.sandbox_workspace_write\]$/m);
+  assert.match(autonomousAudited, /^network_access = false$/m);
+
+  const fullAccessReviewed = readGeneratedConfigCandidate(t, 'full-access-reviewed');
+  assertProfileCandidateShape(fullAccessReviewed, 'full-access-reviewed');
+  assert.match(fullAccessReviewed, /reviewed unsandboxed operation/);
+  assert.match(fullAccessReviewed, /^sandbox_mode = "danger-full-access"$/m);
+  assert.match(fullAccessReviewed, /^approval_policy = "on-request"$/m);
+  assert.match(fullAccessReviewed, /^approvals_reviewer = "auto_review"$/m);
+  assert.match(fullAccessReviewed, /^allow_login_shell = false$/m);
+});
+
+test('all config candidates avoid active profile activation and legacy network features', (t) => {
+  for (const profile of [
+    'review-only',
+    'safe-interactive',
+    'autonomous-audited',
+    'install-window',
+    'net-limited',
+    'full-access-reviewed',
+    'external-isolated',
+    'ci-noninteractive',
+  ]) {
+    assertProfileCandidateShape(readGeneratedConfigCandidate(t, profile), profile);
+  }
 });
 
 test('JSON templates parse and hook samples return valid deny/stop output shapes', () => {

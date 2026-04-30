@@ -1,8 +1,14 @@
 .DS_Store
+Thumbs.db
+desktop.ini
 node_modules/
+*.zip
+*.tar
+*.tar.gz
 *.tgz
 npm-debug.log*
 coverage/
 .nyc_output/
 tmp/
+.tmp/
 temp/

@@ -95,7 +95,7 @@ Working tree contains the v0.2 release-candidate implementation and release arti
 
 ## Tests Run
 
-- PASS `npm test` — 14 tests.
+- PASS `npm test` — 16 tests.
 - PASS `npm run smoke`.
 - PASS `node bin/codex-uplift-init.mjs --help`.
 - PASS `node bin/codex-uplift-init.mjs verify`.
@@ -119,7 +119,7 @@ Working tree contains the v0.2 release-candidate implementation and release arti
 
 ## Package Contents Summary
 
-`npm pack --dry-run` reported 24 files, package size about 20.7 kB, unpacked size about 76.7 kB. Contents include bin, templates, README, and orchestrator prompts. `.DS_Store` and private planning artifacts were not included in the tarball.
+`npm pack --dry-run` reported 24 files, package size about 20.9 kB, unpacked size about 77.7 kB. Contents include bin, templates, README, and orchestrator prompts. `.DS_Store` and private planning artifacts were not included in the tarball.
 
 ## Install And Uninstall Verification
 
@@ -139,9 +139,16 @@ Working tree contains the v0.2 release-candidate implementation and release arti
 - Candidate-only project/rules/hooks/compact commands are minimal seam implementations rather than full generators.
 - Custom Codex home outside user-home marketplace root uses an absolute local `source.path` fallback. This is explicit and warned, but should be probed in the live Codex client before documenting as fully portable.
 - Exact effective config behavior across app/CLI/IDE/managed layers remains deferred.
+- Profile candidates now use profile-scoped TOML and current documented network/reviewer keys, but local Codex runtime validation of every candidate key remains a v0.3 probe.
+
+## Manual Gates Still Closed
+
+Do not run the version bump, npm publish, git tag, remote push, GitHub release creation, real user-home install, active hook/rule enablement, full-access profile activation, telemetry enablement, RTK activation, or v0.3 implementation without explicit user approval.
 
 ## Release Recommendation
 
+Status: release candidate acceptable after patches.
+
 Recommendation: `ship-alpha`.
 
-Rationale: v0.2 now has the setup-assistant baseline, safety tests, manifest/status/uninstall, and corrected plugin/duplicate behavior. Keep alpha posture until a live Codex plugin install/restart check and manual package version bump are approved.
+Rationale: late orchestration recovery found and fixed material config/posture candidate mismatches. v0.2 now has the setup-assistant baseline, safety tests, profile-candidate content tests, manifest/status/uninstall, corrected plugin/duplicate behavior, and reconciled orchestration provenance. Keep alpha posture until a live Codex plugin install/restart check and manual package version bump are approved.

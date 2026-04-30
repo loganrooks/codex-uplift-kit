@@ -4,11 +4,13 @@ Personal Codex setup kit for making agentic software work more auditable, delega
 
 This is not an official OpenAI package. It is a scaffold you can inspect, adapt, and install locally.
 
-## v0.2 direction
+## v0.2 release-candidate status
 
-`codex-uplift-kit` is moving from a bootstrap bundle toward a Codex setup and posture assistant. The v0.2 CLI should inspect first, write candidates second, and leave active user configuration under user control.
+`codex-uplift-kit` has a local v0.2 release-candidate implementation of the Codex setup/posture assistant baseline. The CLI now supports inspect/status/uninstall, explicit install modes, config doctor/candidate generation, component selection, manifest tracking, and candidate-only project/hooks/rules/compact/RTK seams.
 
-The intended v0.2 shape is:
+The package is still unreleased as v0.2: `package.json` remains `0.1.0` until the manual release gate. Treat project/hooks/rules/compact/RTK commands as minimal candidate-generation seams, not mature active-policy applicators.
+
+The v0.2 shape is:
 
 - inspect existing `~/.codex` and `~/.agents` assets before recommending changes;
 - support explicit install modes: classic standalone skills, plugin, hybrid, and minimal;
@@ -16,8 +18,6 @@ The intended v0.2 shape is:
 - keep higher-autonomy postures paired with recovery, audit, rollback, and status controls;
 - maintain a manifest so status and uninstall flows can distinguish kit-managed files from user-owned files;
 - surface project-level candidates for `AGENTS.md`, `.codex/config.toml`, rules, hooks, policy notes, compaction posture, RTK candidates, and eval-only checks without silently promoting them into active project policy.
-
-Some of those commands are not present in the current v0.1-style CLI yet. Until the v0.2 implementation lands, treat those items as product direction and inspect generated files manually.
 
 ## What it installs
 
@@ -46,10 +46,12 @@ node bin/codex-uplift-init.mjs install
 ```bash
 cd codex-uplift-kit
 npm pack
-npm install -g ./codex-uplift-kit-0.1.0.tgz
+npm install -g ./codex-uplift-kit-<version>.tgz
 codex-uplift-init --dry-run
 codex-uplift-init install
 ```
+
+Replace `<version>` with the tarball version printed by `npm pack`.
 
 ## Use after publishing or hosting
 
@@ -79,7 +81,7 @@ Project `.codex/` config is trust-gated by Codex. Treat project-local config, ru
 
 The config fragment in this package is candidate-only guidance. Do not paste it blindly over an existing `~/.codex/config.toml`.
 
-Profiles are a CLI-focused, experimental convenience for switching posture. A future v0.2 config candidate command should generate profiles as reviewable TOML candidates, not silently activate them.
+Profiles are CLI-focused candidate fragments. `config candidate --profile <profile>` writes reviewable TOML candidates; it does not activate profiles or overwrite active config.
 
 Be precise about high-autonomy modes:
 

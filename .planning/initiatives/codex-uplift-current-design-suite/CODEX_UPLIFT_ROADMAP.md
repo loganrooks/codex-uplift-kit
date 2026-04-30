@@ -214,10 +214,13 @@ A v0.2 release candidate requires:
 - `.codex-uplift/release-candidate-review.md` created;
 - manual approval before npm publish, git tag, GitHub release, or remote push.
 
+### Late orchestration recovery gate
+
+Before v0.2 release approval, ensure missing orchestration/worktree docs are added and indexed, retrospective `.codex-uplift/` artifacts are created, config/posture semantic tests are run or explicitly deferred, and release docs reflect the current CLI state.
+
 ### v0.2 implementation status on 2026-04-30
 
-Status: release-candidate implementation prepared; manual release decision
-pending.
+Status: release-candidate implementation prepared after late orchestration recovery; manual release decision pending.
 
 Implemented in the local package:
 
@@ -246,6 +249,14 @@ Release gates passed locally:
 - docs updated;
 - `.codex-uplift/release-candidate-review.md` created;
 - `.codex-uplift/v0.3-handoff.md` created.
+
+Recovery gate status:
+
+- late orchestration/delegation/worktree docs copied into the parent planning suite;
+- retrospective orchestration artifacts created;
+- config/posture semantic review found profile-candidate mismatches, now patched with generated-content tests;
+- public docs consistency pass complete;
+- verification rerun after recovery patches.
 
 Manual gates still pending:
 
