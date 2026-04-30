@@ -1,0 +1,11 @@
+# Optional Codex config fragment for codex-uplift-kit.
+# Merge manually into ~/.codex/config.toml after inspecting your existing config.
+
+[agents]
+# Defaults are already conservative; keep depth at 1 unless you explicitly want recursive delegation.
+max_threads = 6
+max_depth = 1
+
+# Enable only after inspecting ~/.codex/hooks.json and hook scripts.
+# [features]
+# codex_hooks = true

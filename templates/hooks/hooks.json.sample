@@ -1,0 +1,29 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ~/.codex/hooks/pretool-protect-git.mjs",
+            "timeout": 30,
+            "statusMessage": "Checking shell command for destructive git patterns"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ~/.codex/hooks/stop-audit-shape.mjs",
+            "timeout": 30,
+            "statusMessage": "Checking final response audit shape"
+          }
+        ]
+      }
+    ]
+  }
+}

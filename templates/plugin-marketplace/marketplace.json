@@ -1,0 +1,20 @@
+{
+  "name": "codex-uplift-local",
+  "interface": {
+    "displayName": "Codex Uplift Local"
+  },
+  "plugins": [
+    {
+      "name": "codex-uplift-kit",
+      "source": {
+        "source": "local",
+        "path": "./plugins/codex-uplift-kit"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

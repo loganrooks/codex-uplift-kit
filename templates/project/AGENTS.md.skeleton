@@ -1,0 +1,45 @@
+# AGENTS.md
+
+This is a skeleton only. Replace proposal text with repo-observed guidance.
+
+## Project mission
+
+## Source-of-truth map
+
+- Runtime/source:
+- Tests:
+- Docs:
+- ADRs/plans:
+- Generated/materialized outputs:
+- Audit/provenance artifacts:
+- Do not edit without approval:
+
+## Setup and commands
+
+- Install:
+- Run:
+- Test:
+- Lint:
+- Typecheck:
+- Build:
+- Contract checks:
+- Fast smoke check:
+- Full verification stack:
+
+## Working rules
+
+## Architecture and protected seams
+
+## Decision boundaries
+
+## Auditability and artifacts
+
+## Delegation rules
+
+## Commit hygiene
+
+## Known failure modes
+
+## Verification
+
+## References

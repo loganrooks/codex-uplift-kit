@@ -1,0 +1,21 @@
+{
+  "name": "codex-uplift-kit",
+  "version": "0.1.0",
+  "description": "Reusable Codex skills for auditable project onboarding, audit artifacts, delegation contracts, and retrospectives.",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Codex Uplift Kit",
+    "shortDescription": "Auditability and delegation workflows for Codex.",
+    "longDescription": "Reusable skills for creating evidence-backed AGENTS.md files, durable audit artifacts, bounded subagent delegation contracts, and retrospective instruction updates.",
+    "developerName": "Local user",
+    "category": "Productivity",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Use codex-project-agents-init to draft AGENTS.md for this repo.",
+      "Use codex-delegation-contract to split this audit across bounded subagents."
+    ]
+  }
+}

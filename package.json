@@ -1,0 +1,23 @@
+{
+  "name": "codex-uplift-kit",
+  "version": "0.1.0",
+  "description": "Personal Codex setup kit: user-level AGENTS.md, audit skills, custom agents, and optional hooks.",
+  "type": "module",
+  "bin": {
+    "codex-uplift-init": "bin/codex-uplift-init.mjs"
+  },
+  "files": [
+    "bin/",
+    "templates/",
+    "README.md",
+    "ORCHESTRATOR_INSTALL_PROMPT.md",
+    "ORCHESTRATOR_AGENTS_FRAGMENT.md"
+  ],
+  "scripts": {
+    "pack:local": "npm pack",
+    "smoke": "node bin/codex-uplift-init.mjs --dry-run --home /tmp/codex-uplift-kit-smoke-home"
+  },
+  "keywords": ["codex", "agents.md", "agent-skills", "auditability"],
+  "license": "MIT",
+  "engines": {"node": ">=18"}
+}
