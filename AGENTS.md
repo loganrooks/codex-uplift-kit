@@ -1,110 +1,138 @@
 # codex-uplift-kit Project Instructions
 
-This is a temporary project-level operating contract for `codex-uplift-kit`.
-Keep it until the v0.2 setup-assistant design is implemented and the durable
-project guidance can be regenerated from the finalized docs.
+This file is the project-specific layer for developing `codex-uplift-kit`.
+The portable working agreement belongs in the home Codex `AGENTS.md`; this file
+adds repository facts, product direction, and local verification expectations.
 
 ## Project Aim
 
-`codex-uplift-kit` is a Codex setup and posture assistant. It installs and
-maintains reusable Codex assets for auditable agentic development:
+`codex-uplift-kit` is evolving from a conservative bootstrap bundle into a
+Codex setup and posture assistant. It should help users install and maintain
+auditable Codex assets without silently taking over their local setup.
 
-- user-level operating guidance;
+The package should support:
+
+- user-level working agreements;
 - reusable skills;
 - custom agent templates;
 - optional hook samples;
 - optional plugin packaging;
 - config/profile candidates;
-- project-level onboarding candidates.
+- project-level onboarding candidates;
+- inspection, doctor, status, upgrade, and uninstall flows.
 
-The package is not an official OpenAI package. Treat platform behavior as a
-thing to verify against official Codex docs or local probes, not memory.
+This is not an official OpenAI package. Verify platform behavior against
+official Codex docs or local probes before encoding it in docs or code.
 
-## Current Direction
+## Product Direction
 
-v0.1 is a conservative bootstrap bundle. v0.2 should become the first credible
+v0.1 is the baseline bootstrap bundle. v0.2 should become the first credible
 setup-assistant release:
 
-- inspect existing `~/.codex` and `~/.agents` state before proposing changes;
-- generate candidates instead of silently mutating active config;
-- support install modes such as classic, plugin, and hybrid;
-- avoid duplicate skill installs unless explicitly requested;
-- validate plugin marketplace paths against documented Codex semantics;
-- provide safe config/profile candidates for different autonomy postures;
-- keep high-autonomy profiles paired with recovery, audit, and rollback guidance;
-- add installer tests for safety-critical behavior.
+- inspect existing `~/.codex` and `~/.agents` state before proposing writes;
+- generate candidates rather than silently mutating active config;
+- support component selection and install modes: classic, plugin, hybrid, and
+  minimal;
+- make plugin mode skip standalone skills by default;
+- detect duplicate skill names before creating ambiguous installs;
+- generate and verify plugin marketplace metadata from the chosen install
+  location;
+- provide config/profile candidates for review-only, safe-interactive,
+  autonomous-audited, trusted-power, full-access-reviewed, external-isolated,
+  and CI use cases;
+- pair higher autonomy with explicit recovery, audit, and rollback controls;
+- support project-level `AGENTS.md`, `.codex/config.toml`, rules, and hook
+  candidates derived from repo evidence.
 
 ## Safety Invariants
 
-- Never write to a real user `~/.codex` or `~/.agents` path while testing unless
-  the user explicitly asks for that exact operation.
+- Do not write to a real user `~/.codex` or `~/.agents` path during tests unless
+  the user explicitly requests that exact operation.
 - Use temp `--home` and `--user-home` directories for installer verification.
-- Preserve the non-destructive install contract: existing files produce
-  `.candidate.<timestamp>` outputs by default; `--force` must create backups.
+- Preserve the installer safety contract: existing files produce
+  `.candidate.<timestamp>` outputs by default; `--force` creates backups before
+  overwriting.
 - Do not silently enable hooks, rules, plugins, network access, full access, or
   `approval_policy = "never"`.
 - Do not present `danger-full-access` plus `auto_review` as sandboxed safety.
 - Treat hooks as Codex lifecycle guardrails with documented limitations, not as
   a complete security boundary.
+- Treat project `.codex/` config as trust-gated; surface that boundary in docs
+  and generated candidates.
 
 ## Platform Claims
 
-For Codex mechanics, check official OpenAI docs before making claims about:
+Use official OpenAI Codex docs as the source of truth for:
 
-- config precedence and profiles;
-- sandbox and approval behavior;
-- `approvals_reviewer`;
-- `default_permissions` and rules;
-- hooks and hook event shapes;
-- skills and duplicate skill names;
+- `AGENTS.md` discovery and precedence;
+- config precedence, profiles, project trust, and managed config;
+- sandbox, approval, reviewer, rules, and permission behavior;
+- hooks, hook event shapes, and hook loading;
+- skills and duplicate skill behavior;
 - plugin marketplace path semantics;
-- project trust and project-local `.codex` loading.
+- custom agent schema and subagent availability.
 
-When docs do not settle behavior, write the claim as an empirical question and
-add a local non-destructive probe.
+If docs do not settle behavior, label it as an empirical unknown and add a
+non-destructive probe instead of asserting it from memory.
+
+## Repository Surfaces
+
+- `bin/codex-uplift-init.mjs` is the installer CLI.
+- `templates/home/AGENTS.md` is the portable home working agreement.
+- `templates/skills/` contains standalone skill installs.
+- `templates/plugin/skills/` mirrors plugin-packaged skills.
+- `templates/agents/` contains custom agent templates.
+- `templates/hooks/` contains inactive hook samples.
+- `.planning/initiatives/codex-uplift-current-design-suite/` contains the v0.2
+  design suite and review responses.
+
+Keep the home template portable. Put repo-specific commands, failure modes, and
+implementation constraints in this project file or planning artifacts.
 
 ## Implementation Rules
 
-- Keep changes narrowly scoped and commit them atomically.
 - Use `apply_patch` for manual file edits.
 - Prefer Node standard-library code unless a dependency clearly earns its cost.
 - Keep installer behavior deterministic and testable with temp directories.
-- Add or update `node:test` coverage when touching installer behavior.
-- Avoid copying local system files such as `.DS_Store` into installed templates.
+- Keep file writes candidate-first unless the user explicitly asks for active
+  installation.
 - Do not refactor unrelated templates while fixing installer logic.
-
-## Documentation Rules
-
-- Write for a fresh reader who has not seen the chat history.
-- Separate implementation defects, product requirements, platform corrections,
-  and empirical unknowns.
-- Keep user-facing docs candidate-first and explicit about tradeoffs.
-- Do not cargo-cult project `AGENTS.md` examples into home-level guidance.
-- Link or cite official Codex docs for platform facts when the claim is
-  non-obvious or recently corrected.
+- Avoid copying system junk such as `.DS_Store`, `Thumbs.db`, or editor swap
+  files into installed templates.
+- When adding installer behavior, add focused `node:test` coverage.
 
 ## Verification
 
-Run the light checks after changes that affect packaging or installation:
+Run these light checks after packaging or installer-adjacent changes:
 
 ```bash
 npm run smoke
 npm pack --dry-run
 ```
 
-For installer changes, add focused `node:test` coverage and run:
+For installer behavior changes, add or update tests and run:
 
 ```bash
 npm test
 ```
 
-If `npm test` does not exist yet, either add it with the tests or state that the
-test suite is not yet present.
+If `npm test` does not exist yet, either add it with the tests or explicitly
+state that the test suite is not present.
+
+## Planning And Artifacts
+
+- Read `~/.gsd/knowledge/index.md` before starting substantive work.
+- Preserve design decisions and review responses under `.planning/`.
+- Separate implementation defects, setup-assistant requirements,
+  platform-modeling corrections, and empirical unknowns.
+- For substantial changes, record verification and boundaries in the relevant
+  planning artifact or commit message.
 
 ## Git Workflow
 
-- The initial baseline commit is the current package state.
-- Commit project guidance, review revisions, implementation changes, and tests
-  as separate logical commits.
+- Work on `main` unless the user asks for a branch.
+- Keep commits atomic and scoped to one coherent change.
 - Check `git status --short` before and after edits.
 - Never revert user changes unless explicitly asked.
+- Use concise commit messages; include body notes for substantive changes when
+  they clarify why, verification, or boundaries.
