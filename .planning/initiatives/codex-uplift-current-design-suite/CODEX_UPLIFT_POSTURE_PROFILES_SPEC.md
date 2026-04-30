@@ -2,50 +2,49 @@
 
 Date: 2026-04-30
 
-Subject: Sandbox, approval, permissions, and autonomy profile candidates
+Subject: Candidate posture profiles for `codex-uplift-kit`
 
-## 0. Executive position
+## 0. Purpose
 
-Autonomy and safety are not one knob. v0.2 should offer posture profiles that combine sandboxing, approval policy, auto-review, default permissions, rules, hooks, recovery checkpoints, and audit artifacts.
+This file defines the posture vocabulary v0.2 should expose through candidate config generation. A posture is not just a sandbox setting; it is a combination of sandbox, approval policy, reviewer, network, writable roots, rules/hooks posture, and recovery expectations.
 
-Profiles are generated as **candidates**, not silently applied.
+## 1. Core distinction
 
-## 1. Controls matrix
+Sandboxing and approvals are separate controls:
 
-| Layer | Helps with | Cannot guarantee |
-|---|---|---|
-| Sandbox | Filesystem/network containment during command execution. | Decision quality or auditability. |
-| Approval policy | Pause points before selected actions. | Containment after approval. |
-| Auto-review | Review of eligible approval prompts. | Reviewing actions that do not prompt. |
-| Default permissions | Named filesystem/network profile for sandboxed tool calls. | Safety outside its scope. |
-| Rules | Command policy outside sandbox. | All semantic risk or every shell wrapper. |
-| Hooks | Lifecycle guardrails and context injection. | Complete enforcement boundary. |
-| Git checkpoints | Reversibility. | Prevention. |
-| Artifacts | Auditability. | Correctness by themselves. |
+- sandboxing defines what Codex can technically do without crossing an environment boundary;
+- approval policy defines when Codex must stop and ask before crossing a boundary or performing an action that needs review;
+- auto-review changes who reviews eligible prompts; it does not recreate the sandbox boundary.
 
-## 2. Profile catalog
+Therefore, `danger-full-access + auto_review` should be described as **reviewed unsandboxed operation**, not as sandboxed safety.
+
+## 2. Candidate profiles
+
+v0.2 should generate candidate profiles only. It must not silently make any profile the user's default.
 
 ### 2.1 `review-only`
 
-Use for unknown repos, read-only investigation, code review, or planning.
+Use for code review, repo exploration, research, and planning.
+
+Expected shape:
 
 ```toml
 [profiles.review-only]
+sandbox_mode = "read-only"
 approval_policy = "on-request"
 approvals_reviewer = "user"
-sandbox_mode = "read-only"
 model_reasoning_effort = "high"
 ```
 
 ### 2.2 `safe-interactive`
 
-Conservative default for normal development.
+Use for normal assisted development with explicit user review.
 
 ```toml
 [profiles.safe-interactive]
+sandbox_mode = "workspace-write"
 approval_policy = "on-request"
 approvals_reviewer = "user"
-sandbox_mode = "workspace-write"
 allow_login_shell = false
 
 [profiles.safe-interactive.sandbox_workspace_write]
@@ -54,13 +53,13 @@ network_access = false
 
 ### 2.3 `autonomous-audited`
 
-Recommended high-autonomy default.
+Recommended high-autonomy default candidate.
 
 ```toml
 [profiles.autonomous-audited]
+sandbox_mode = "workspace-write"
 approval_policy = "on-request"
 approvals_reviewer = "auto_review"
-sandbox_mode = "workspace-write"
 allow_login_shell = false
 default_permissions = "codex-uplift-autonomous"
 
@@ -70,147 +69,104 @@ network_access = false
 
 Compensating controls:
 
-- clean/known worktree gate;
-- bounded plan or task contract;
-- rules for destructive commands;
-- optional hooks for lifecycle checks;
-- artifact-first subagent contracts;
-- verification log;
-- checkpoint branch/stash where appropriate.
+- inspect worktree first;
+- write plan/validation artifacts;
+- use rules for destructive commands;
+- keep commits atomic when commits are authorized;
+- prepare rollback/checkpoint notes.
 
 ### 2.4 `install-window`
 
-Temporary profile for dependency/bootstrap tasks that need network or cache writes.
+Use for dependency/bootstrap work that needs network or cache writes.
 
-```toml
-[profiles.install-window]
-approval_policy = "on-request"
-approvals_reviewer = "auto_review"
-sandbox_mode = "workspace-write"
-allow_login_shell = false
+Candidate behavior:
 
-[profiles.install-window.sandbox_workspace_write]
-network_access = true
-# Add explicit writable roots as needed instead of jumping to danger-full-access.
-```
+- workspace-write;
+- auto-review or user-review depending on user preference;
+- network enabled only for the window;
+- explicit writable roots for package caches if needed;
+- generated rollback/cleanup note.
 
-Use this before `full-access-reviewed` when the issue is package-manager/network friction.
+This profile should be suggested before jumping to full access when the issue is package-manager or cache access.
 
 ### 2.5 `net-limited`
 
-For research or docs-fetching tasks where network is needed but writes should stay bounded.
+Use for network-heavy research or tool setup where network is needed but filesystem writes should stay scoped.
 
-```toml
-[profiles.net-limited]
-approval_policy = "on-request"
-approvals_reviewer = "auto_review"
-sandbox_mode = "workspace-write"
-allow_login_shell = false
+Candidate behavior:
 
-[profiles.net-limited.sandbox_workspace_write]
-network_access = true
-```
+- workspace-write or read-only depending on task;
+- network enabled;
+- rules/hooks around package managers and curl-like commands;
+- explicit note that web/source content is untrusted.
 
 ### 2.6 `full-access-reviewed`
 
-Escape hatch for trusted environments when workspace-write is too restrictive.
+Use only as an escape hatch for trusted repos, trusted machines, or externally isolated environments.
 
 ```toml
 [profiles.full-access-reviewed]
+sandbox_mode = "danger-full-access"
 approval_policy = "on-request"
 approvals_reviewer = "auto_review"
-sandbox_mode = "danger-full-access"
 allow_login_shell = false
 ```
 
 Required warning:
 
-> This is reviewed unsandboxed operation, not sandboxed safety. Auto-review reviews eligible approval prompts; it does not recreate filesystem/network containment. Pair with rules, hooks, checkpoints, clean worktree, and explicit recovery plans.
+```text
+This is reviewed unsandboxed operation. It may still route eligible approval prompts to auto-review, rules, hooks, or app/tool policy, but it does not provide sandbox containment. Use only with clean worktree checks, recovery checkpoints, and explicit release/manual gates.
+```
 
 ### 2.7 `external-isolated`
 
-For disposable devcontainers/VMs where the outer environment is the boundary.
+Use when an outer VM/container/devcontainer is the primary safety boundary.
 
-```toml
-[profiles.external-isolated]
-approval_policy = "on-request"
-approvals_reviewer = "auto_review"
-sandbox_mode = "danger-full-access"
-allow_login_shell = false
-```
+Candidate behavior:
 
-Requires an explicit note naming the external boundary, mounted secrets, network constraints, and rollback method.
+- may use full access inside the isolated environment;
+- must record what isolation boundary exists;
+- must record what secrets/network mounts are exposed;
+- must not claim safety if the container has sensitive credentials mounted.
 
 ### 2.8 `ci-noninteractive`
 
-For automation where prompts cannot be answered.
+Use for scripted `codex exec`-style runs where no human approval is possible.
 
-```toml
-[profiles.ci-noninteractive]
-approval_policy = "never"
-sandbox_mode = "workspace-write"
-allow_login_shell = false
+Candidate behavior:
 
-[profiles.ci-noninteractive.sandbox_workspace_write]
-network_access = false
-```
+- `approval_policy = "never"` only with strong warning;
+- sandbox constrained;
+- network off unless CI job requires it;
+- output captured to artifacts;
+- no release/publish actions without separate CI release gate.
 
-Use only in tightly controlled automation. Do not combine with broad write/network access without explicit policy.
+### 2.9 `yolo` / bypass mode
 
-## 3. Named permission candidate
+Not a best-practice profile.
 
-Candidate only:
+The package may document this as a platform capability, but should not recommend it except inside a dedicated externally hardened environment. It should never be silently selected by a candidate generator.
 
-```toml
-[permissions.codex-uplift-autonomous.filesystem.":project_roots"]
-"." = "write"
-"**/.env" = "none"
-"**/.env.*" = "none"
-"**/secrets/**" = "none"
-"**/.ssh/**" = "none"
+## 3. Phase routing
 
-[permissions.codex-uplift-autonomous.network]
-enabled = false
-```
+Profiles should be connected to phases:
 
-## 4. Shell environment hardening candidate
-
-Candidate only:
-
-```toml
-[shell_environment_policy]
-inherit = "core"
-exclude = ["*TOKEN*", "*SECRET*", "*KEY*", "*PASSWORD*", "*_CREDENTIALS"]
-```
-
-Do not force this globally without user review; some toolchains need selected environment variables.
-
-## 5. Phase-to-profile mapping
-
-| Phase | Suggested posture |
+| Phase | Preferred posture |
 |---|---|
 | Unknown repo | `review-only` |
-| Planning / project AGENTS drafting | `safe-interactive` |
+| Planning / AGENTS drafting | `safe-interactive` |
 | Normal implementation | `autonomous-audited` |
 | Dependency/bootstrap | `install-window` |
-| Network-heavy research | `net-limited` |
-| Release/remote operations | `safe-interactive` plus stricter rules |
-| Sandbox-blocked trusted task | `full-access-reviewed` |
+| Research/network | `net-limited` |
+| Release / remote operations | `safe-interactive` plus manual gates |
+| Sandbox-blocked emergency | `full-access-reviewed` |
 | Disposable VM/container | `external-isolated` |
-| CI/noninteractive | `ci-noninteractive` |
+| CI | `ci-noninteractive` |
 
-## 6. Probe requirements
+## 4. v0.2 implementation rule
 
-Before making strong claims about a client/profile combination, record:
+v0.2 must generate candidates and explanations. It must not silently switch the user's active profile or assume the app, CLI, and IDE expose identical UI controls.
 
-- client: CLI/app/IDE;
-- version if visible;
-- active profile;
-- sandbox mode;
-- approval mode;
-- auto-review setting;
-- relevant rules/hooks;
-- test action;
-- observed outcome.
+## 5. v0.3 seam
 
-Do not infer effective safety from config text alone.
+v0.2 should keep the posture profile model data-driven so v0.3 can add adaptive recommendation, probes, and per-project phase routing without rewriting the CLI.

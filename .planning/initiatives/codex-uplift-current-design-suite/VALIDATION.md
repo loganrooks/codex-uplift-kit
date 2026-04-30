@@ -2,19 +2,40 @@
 
 Date: 2026-04-30
 
-Checks performed while assembling the current suite:
+Subject: Validation notes for the current design suite package
 
-- Packaged the latest root-level documents, not the earlier stale suite zip.
-- Added `CODEX_UPLIFT_SOURCE_BASELINE.md` so platform assumptions and RTK evaluation assumptions are auditable.
-- Preserved the no-silent-deferral rule and explicit v0.3+ non-foreclosure requirements.
-- Preserved the RTK evaluation-first stance: do not install RTK, do not run `rtk init`, do not treat RTK as a default component before evaluation.
-- Included compaction prompt candidates as files under `compaction-prompts/`.
-- Included review-history artifacts but marked them lower precedence than implementation/governance docs.
+## 0. Scope
 
-Not validated:
+This validates the planning suite packaging only. It does not validate the actual `codex-uplift-kit` npm implementation.
 
-- These are planning/design documents, not package source changes.
-- The npm package/tarball was not rebuilt in this step.
-- No local Codex behavior probes were run.
-- No RTK installation or output-quality evaluation was run.
-- Codex client-specific behavior should be re-checked before implementation because app, CLI, IDE, and docs can change.
+## 1. Checks performed for this suite revision
+
+- Added missing source-of-truth docs referenced by entrypoints:
+  - `CODEX_UPLIFT_DOC_SUITE_INDEX.md`
+  - `CODEX_UPLIFT_STATE.md`
+  - `CODEX_UPLIFT_ROADMAP.md`
+  - `CODEX_UPLIFT_STATUS_AND_HANDOFF.md`
+  - `CODEX_UPLIFT_AUTORUN_CONTRACT.md`
+  - `CODEX_UPLIFT_RELEASE_CHECKPOINT.md`
+  - `CODEX_UPLIFT_POSTURE_PROFILES_SPEC.md`
+  - `CODEX_UPLIFT_V0_3_PLUS_HORIZON.md`
+- Added compaction prompt candidate files.
+- Removed stale `README.tmp` from the packaged suite.
+- Rebuilt `MANIFEST.md` from actual files.
+- Rebuilt ZIP package only; tar archive intentionally omitted.
+
+## 2. Known validation limits
+
+- The suite has not been applied inside the actual implementation repository.
+- The suite does not prove v0.1 implementation state; the orchestrator must inspect the repo.
+- Platform claims should be re-checked against current Codex docs by the implementation orchestrator before code decisions.
+
+## 3. Next validation expected from the orchestrator
+
+Inside the implementation repo, create:
+
+```text
+.codex-uplift/validation-log.md
+```
+
+Then record all commands run, results, failures, and unverified assumptions.

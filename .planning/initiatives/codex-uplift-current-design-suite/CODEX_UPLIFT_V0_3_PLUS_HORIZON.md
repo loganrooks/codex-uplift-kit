@@ -2,81 +2,142 @@
 
 Date: 2026-04-30
 
-Subject: Future horizon map and v0.2 non-foreclosure implications
+Subject: v0.3+ horizon and non-foreclosure implications for v0.2
 
-## 0. Executive position
+## 0. Purpose
 
-v0.3+ planning matters now only where it changes v0.2 design. Future work should not bloat v0.2, but v0.2 should preserve the seams future work needs.
+This document does not expand v0.2. It identifies future capabilities that are relevant enough that v0.2 must preserve seams for them.
 
-## 1. Horizon map
+If v0.2 defers one of these, it must record the deferral and avoid designs that make the future capability hard to add.
 
-| Future capability | Likely version | v0.2 seam to preserve |
-|---|---:|---|
-| Config merge assistant | v0.3 | candidate metadata with source/target/conflict/rationale |
-| Project maturity classifier | v0.3 | observations with evidence/confidence, not just final label |
-| Context-pack automation | v0.3 | artifact IDs, summary headers, context-pack schema |
-| Compaction eval automation | v0.3 | prompt registry, fixture IDs, scored outputs |
-| RTK/tool-output adapter experiment | v0.3 if eval passes | adapter registry, eval-only status, raw-output recovery fields |
-| Plugin publishing lifecycle | v0.3 | install modes, duplicate-skill policy, marketplace path validation |
-| Automatic posture routing | v0.3/v0.4 | `PostureRecommendation` data model |
-| Dynamic runtime posture switching | v0.4+ | `runtime_transition` field, platform-dependent deferral |
-| Team policy packs | v0.4+ | policy catalog IDs and surfaces |
-| Enterprise managed config | v0.4+ | managed/overridden category in doctor output |
-| Telemetry/audit streams | v0.4+ | machine-readable manifest/probe/event schema |
-| UI/TUI setup wizard | v0.3+ | JSON command outputs and noninteractive flags |
+## 1. v0.3 thesis
 
-## 2. Current design impacts
+v0.3 should move from static setup assistance to adaptive setup assistance:
 
-### 2.1 Avoid prose-only state
+> Inspect the user/project state, classify phase and risk, generate or recommend posture/config/artifact workflows, and evaluate context-efficiency mechanisms with local evidence.
 
-Machine-readable metadata is required for future merge, UI, telemetry, and automation.
+## 2. Candidate v0.3 capabilities
 
-### 2.2 Avoid universal project doctrine
+### 2.1 Project posture determiner
 
-Project setup must use evidence first so future maturity classifiers can improve it.
+A project-local workflow that inspects:
 
-### 2.3 Avoid core dependency on third-party tools
+- repo maturity;
+- existing AGENTS/config/hooks/rules/skills;
+- trust state;
+- test/build commands;
+- package manager behavior;
+- remote/release surfaces;
+- sensitive file patterns;
+- desired autonomy phase.
 
-RTK and similar tools should remain adapters. v0.2 can evaluate them without binding the kit to them.
+Output:
 
-### 2.4 Avoid hard-coded client equivalence
+```text
+.codex-uplift/project-posture-report.md
+.codex-uplift/project-config-candidates/
+.codex-uplift/project-agents-candidates/
+```
 
-App, CLI, IDE, and web can diverge. Store client IDs, versions, and unknowns.
+v0.2 must preserve a project candidate command seam.
 
-### 2.5 Avoid safety overclaims
+### 2.2 Config probes
 
-Autonomy profiles should include recovery and audit controls, not just less prompting.
+Local probes that classify whether controlled actions are:
 
-## 3. v0.3 candidate slices
+- denied by sandbox;
+- routed to user approval;
+- routed to auto-review;
+- governed by rule;
+- governed by hook;
+- executed without prompt;
+- not externally observable.
 
-The best v0.3 slices, if v0.2 lands cleanly, are:
+v0.2 must avoid overclaiming effective behavior and preserve a `probe` command namespace.
 
-1. config merge assistant;
-2. compaction/context eval automation;
-3. project maturity-aware setup;
-4. plugin marketplace lifecycle;
-5. RTK evaluation decision and optional adapter if accepted;
-6. local behavior probe execution;
-7. retrospective-to-rule candidate loop.
+### 2.3 Adaptive phase routing
 
-## 4. v0.4+ candidate slices
+Recommend posture based on phase:
 
-Likely later:
+- inspect;
+- plan;
+- implement;
+- install/bootstrap;
+- network research;
+- audit;
+- release;
+- CI.
 
-- enterprise/managed config;
-- team policy catalogs;
-- UI/TUI setup wizard;
-- telemetry/audit event stream;
-- runtime posture switching if Codex supports it;
-- richer app/MCP integrations.
+v0.2 must store phase IDs separately from profile IDs.
 
-## 5. Non-foreclosure checklist for v0.2 implementation
+### 2.4 Compaction prompt evaluation and switching
 
-Before merging any v0.2 implementation slice, ask:
+v0.3 may evaluate multiple compaction prompt candidates and allow project/phase-specific selection.
 
-- Did we hard-code a future adapter as core?
-- Did we make a manual workflow impossible to automate later?
-- Did we use prose where a stable ID/schema is needed?
-- Did we make app/CLI/IDE equivalence implicit?
-- Did we make a high-autonomy path sound safer than it is?
-- Did we omit a deferral ID for a not-now capability?
+v0.2 must:
+
+- store prompts as candidates;
+- keep prompt IDs and phase metadata;
+- avoid silently replacing user or project compaction prompts;
+- provide an eval plan.
+
+### 2.5 Tool-output filter evaluation
+
+RTK or another tool-output filter may be useful, but adoption requires Codex-specific proof.
+
+v0.2 must:
+
+- preserve generic tool-output-filter seams;
+- keep RTK evaluation-only;
+- avoid hard-coding RTK into the architecture.
+
+### 2.6 Team/org deployment
+
+Future team use may require:
+
+- managed config awareness;
+- policy summaries;
+- telemetry/observability candidates;
+- plugin marketplace publishing;
+- organization-specific AGENTS/skills.
+
+v0.2 must:
+
+- keep install manifests machine-readable;
+- keep candidate generation non-destructive;
+- distinguish user/project/managed config.
+
+### 2.7 Subagent orchestration maturity
+
+Future versions may add richer orchestrator/subagent workflows.
+
+v0.2 must preserve:
+
+- explicit subagent output contracts;
+- artifact path requirements;
+- disposition states;
+- inherited sandbox/approval expectation fields.
+
+## 3. v0.2 anti-foreclosure checklist
+
+During v0.2 implementation, do not:
+
+- collapse all profiles into one hard-coded default;
+- combine hooks, rules, profiles, and config into one inseparable template;
+- make plugin install and standalone skills inseparable;
+- make RTK-specific command names the only output-filter seam;
+- store install state only as human prose;
+- require project-level setup to overwrite files;
+- assume app/CLI/IDE behavior is identical;
+- hide deferrals in README prose;
+- claim high autonomy is safe without specifying controls and boundaries.
+
+## 4. v0.3 entry condition
+
+Do not start v0.3 implementation until v0.2 has:
+
+- release-candidate review;
+- user decision on release or hold;
+- updated state and roadmap;
+- v0.3 handoff artifact;
+- explicit first v0.3 slice.

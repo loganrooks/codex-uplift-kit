@@ -2,93 +2,80 @@
 
 Date: 2026-04-30
 
-Subject: Source-of-truth map for the `codex-uplift-kit` design suite
+Subject: Source-of-truth map for the post-review `codex-uplift-kit` planning suite
 
-## 0. Executive position
+## 0. Canonical location
 
-This suite treats `codex-uplift-kit` as a **Codex setup and posture assistant**, not merely a file-copy bootstrap bundle.
-
-v0.1 was a valid bootstrap slice. v0.2 should become the first credible setup-assistant slice: inspect existing setup, generate non-destructive candidates, expose install modes, support posture profiles, initialize project-specific Codex surfaces from repo evidence, and preserve long-horizon context/audit state.
-
-The suite also treats v0.3+ as design-relevant now. Future capabilities do not need to be implemented in v0.2, but v0.2 must not accidentally close the seams needed for them.
-
-## 1. Document roles
-
-| Document | Role | Source-of-truth boundary |
-|---|---|---|
-| `CODEX_UPLIFT_RELEASE_GOVERNANCE.md` | Governs release slicing, deferral discipline, non-foreclosure, and acceptance gates. | Highest-level process/source of truth. |
-| `CODEX_UPLIFT_V0_2_OPERATIONAL_SPEC.md` | Buildable v0.2 product contract: commands, components, profiles, candidates, tests. | Source of truth for what v0.2 must implement. |
-| `CODEX_UPLIFT_ROADMAP_DEFERRAL_REGISTER.md` | Tracks vision-relevant not-now capabilities and how v0.2 preserves them. | Source of truth for explicit deferrals. |
-| `CODEX_UPLIFT_ARCHITECTURE_SEAMS.md` | Names extension seams and anti-closure constraints. | Source of truth for how future capability remains possible. |
-| `CODEX_UPLIFT_POSTURE_PROFILES_SPEC.md` | Defines sandbox/approval/permission/autonomy profile candidates. | Source of truth for posture semantics. |
-| `CODEX_UPLIFT_CONTEXT_EFFICIENCY_STRATEGY.md` | Defines token efficiency and long-horizon anti-context-rot strategy. | Source of truth for context architecture. |
-| `CODEX_UPLIFT_COMPACTION_PROMPT_STRATEGY.md` | Defines user/project compaction prompt candidates and prompt registry. | Source of truth for compaction prompt handling. |
-| `CODEX_UPLIFT_CONTEXT_COMPACTION_EVAL_PLAN.md` | Defines evaluation fixtures and rubrics for continuation quality. | Source of truth for prompt/context evaluation. |
-| `CODEX_UPLIFT_RTK_EVALUATION_PROTOCOL.md` | Evaluates RTK as a possible future tool-output compression integration. | Source of truth for RTK posture: evaluate first, do not auto-include. |
-| `CODEX_UPLIFT_V0_3_PLUS_HORIZON.md` | Maps future capabilities to v0.2 design implications. | Source of truth for future-aware non-foreclosure. |
-| `REVIEW_RESPONSE.md` | Formal response to external package review. | Historical/review artifact, not implementation spec. |
-| `REVIEW_RESPONSE_V0_2_ADDENDUM.md` | Framing correction and bridge from review to v0.2. | Historical/transition artifact. |
-
-## 2. No-silent-deferral rule
-
-If v0.2 decides not to implement capability `X`, and `X` is still relevant to the product vision, the relevant document must state:
+When installed in the implementation repository, this suite should live at:
 
 ```text
-Capability X:
-- target horizon or parking status;
-- deferred-to artifact;
-- preserved seam;
-- v0.2 implementation choices that would foreclose it;
-- required non-foreclosure constraint;
-- acceptance criteria for revival;
-- revisit trigger.
+.planning/initiatives/codex-uplift-current-design-suite/
 ```
 
-A phrase such as “future work,” “out of scope,” “later,” or “not now” is invalid unless paired with the fields above.
+The suite is planning/governance material for `codex-uplift-kit`; it is not the npm package payload itself.
 
-## 3. v0.2 source-of-truth precedence
+## 1. Precedence
 
-When docs conflict:
+Use documents in this order when they conflict:
 
-1. `CODEX_UPLIFT_RELEASE_GOVERNANCE.md` controls release/deferral process.
-2. `CODEX_UPLIFT_V0_2_OPERATIONAL_SPEC.md` controls v0.2 implementation scope.
-3. `CODEX_UPLIFT_ROADMAP_DEFERRAL_REGISTER.md` controls named deferrals.
-4. `CODEX_UPLIFT_ARCHITECTURE_SEAMS.md` controls non-foreclosure design constraints.
-5. Specialty docs control their domain: posture, context, compaction, RTK evaluation.
+1. Explicit user instruction in the current task.
+2. `CODEX_UPLIFT_STATE.md` — current state, known gaps, and active handoff.
+3. `CODEX_UPLIFT_ROADMAP.md` — versioned roadmap and release gates.
+4. `CODEX_UPLIFT_RELEASE_GOVERNANCE.md` — release slicing, deferral discipline, and manual gates.
+5. `CODEX_UPLIFT_V0_2_OPERATIONAL_SPEC.md` — v0.2 implementation contract.
+6. `CODEX_UPLIFT_AUTORUN_CONTRACT.md` — what the orchestrator may do automatically.
+7. `CODEX_UPLIFT_ROADMAP_DEFERRAL_REGISTER.md` — explicit deferrals and revisit triggers.
+8. `CODEX_UPLIFT_NON_FORECLOSURE_MATRIX.md` and `CODEX_UPLIFT_ARCHITECTURE_SEAMS.md` — seams that v0.2 must preserve.
+9. Context/token docs, posture docs, RTK evaluation, and source baseline.
+10. Review-response artifacts, which are historical background only.
 
-Review-response docs are lower precedence than the suite source-of-truth docs.
+If a later artifact appears to change a source-backed platform claim, re-check the current Codex docs and record the result in `CODEX_UPLIFT_SOURCE_BASELINE.md` before relying on it.
 
-## 4. v0.2 acceptance summary
+## 2. Entry points
 
-v0.2 is not complete unless it provides:
+- `START_HERE.md` — human-facing suite entry point.
+- `CODEX_UPLIFT_ORCHESTRATOR_ENTRYPOINT.md` — orchestrator handoff.
+- `ORCHESTRATOR_IMPLEMENTATION_DIRECTIVE.md` — copy/paste directive for the implementation orchestrator.
 
-- `inspect` and `doctor` surfaces for existing Codex setup;
-- non-destructive candidate generation for user and project config;
-- explicit install modes and component selection;
-- duplicate-skill and plugin-path handling;
-- manifest/status/uninstall support;
-- posture profile candidates with warnings and client notes;
-- project-specific setup candidates based on repo evidence;
-- rules/hooks candidates with documented boundaries;
-- context efficiency and compaction prompt candidates;
-- safety-critical installer tests;
-- a living deferral register and seam map.
+## 3. Current-state and planning docs
 
-## 5. Explicit non-goals for v0.2
+- `CODEX_UPLIFT_STATE.md` — current status, what v0.1 means, and what must be observed in the actual repo.
+- `CODEX_UPLIFT_ROADMAP.md` — concrete v0.1/v0.2/v0.3 roadmap.
+- `CODEX_UPLIFT_STATUS_AND_HANDOFF.md` — short handoff summary and next actions.
+- `CODEX_UPLIFT_AUTORUN_CONTRACT.md` — automatic execution boundaries and manual gates.
+- `CODEX_UPLIFT_RELEASE_CHECKPOINT.md` — v0.2 release-candidate checklist.
 
-v0.2 should not claim:
+## 4. Build contract docs
 
-- that it is a security boundary;
-- that `danger-full-access + auto_review` is safe;
-- that hooks fully enforce policy;
-- that RTK should be installed or enabled by default;
-- that compaction prompts improve performance without evaluation;
-- that app, CLI, IDE, and project config expose identical behavior;
-- that it can compute exact effective runtime behavior without probes and client/version annotations.
+- `CODEX_UPLIFT_V0_2_OPERATIONAL_SPEC.md` — v0.2 feature contract.
+- `CODEX_UPLIFT_POSTURE_PROFILES_SPEC.md` — sandbox/approval/profile semantics and candidate profiles.
+- `CODEX_UPLIFT_RELEASE_GOVERNANCE.md` — release slicing, commit/release discipline, and deferral rules.
 
-These are not dismissed. They are handled through deferrals, probes, and preserved seams.
+## 5. Long-horizon docs
 
+- `CODEX_UPLIFT_ROADMAP_DEFERRAL_REGISTER.md` — named deferrals, acceptance criteria, and revisit triggers.
+- `CODEX_UPLIFT_NON_FORECLOSURE_MATRIX.md` — future capabilities and seams v0.2 must preserve.
+- `CODEX_UPLIFT_ARCHITECTURE_SEAMS.md` — extension points and anti-closure constraints.
+- `CODEX_UPLIFT_V0_3_PLUS_HORIZON.md` — v0.3+ implications for v0.2 design.
 
-## 7. Governance rule: output-filter adoption requires evaluation
+## 6. Context/token-efficiency docs
 
-External output-filter tools such as RTK must not be installed, recommended as defaults, or treated as v0.2 adoption candidates merely because they promise token savings. v0.2 should preserve a generic output-filter seam and document evaluation gates. Adoption requires Codex-client compatibility, correctness checks, information-retention checks, safety/privacy review, raw-output recovery, reversibility, and local token-savings measurements.
+- `CODEX_UPLIFT_CONTEXT_EFFICIENCY_STRATEGY.md` — artifact-first, compact-active-context strategy.
+- `CODEX_UPLIFT_COMPACTION_PROMPT_STRATEGY.md` — user/project compaction prompt candidates and cautions.
+- `CODEX_UPLIFT_CONTEXT_COMPACTION_EVAL_PLAN.md` — how to evaluate compaction prompts.
+- `CODEX_UPLIFT_RTK_EVALUATION_PROTOCOL.md` — RTK/tool-output-filter evaluation-only track.
+
+## 7. Source/evidence docs
+
+- `CODEX_UPLIFT_SOURCE_BASELINE.md` — source-backed platform assumptions and re-check anchors.
+- `REVIEW_RESPONSE.md` — response to external review, historical.
+- `REVIEW_RESPONSE_V0_2_ADDENDUM.md` — framing addendum, historical bridge.
+
+## 8. Rule for missing docs
+
+If any entry point references a missing file, the orchestrator must stop implementation and either:
+
+1. create the missing planning artifact from the suite's existing materials, or
+2. record the missing artifact as a blocking observation in `.codex-uplift/implementation-observations.md` and ask for user direction.
+
+For the current suite, the expected documents are those listed in `MANIFEST.md`.
