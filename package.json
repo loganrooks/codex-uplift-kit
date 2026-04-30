@@ -1,6 +1,6 @@
 {
   "name": "codex-uplift-kit",
-  "version": "0.1.0",
+  "version": "0.2.0-alpha.0",
   "description": "Non-destructive Codex setup and posture assistant for auditable local configuration candidates.",
   "type": "module",
   "repository": {
@@ -29,10 +29,17 @@
     "test": "node --test",
     "verify": "node bin/codex-uplift-init.mjs verify"
   },
-  "keywords": ["codex", "agents.md", "agent-skills", "auditability"],
+  "keywords": [
+    "codex",
+    "agents.md",
+    "agent-skills",
+    "auditability"
+  ],
   "license": "MIT",
   "publishConfig": {
     "access": "public"
   },
-  "engines": {"node": ">=18"}
+  "engines": {
+    "node": ">=18"
+  }
 }
