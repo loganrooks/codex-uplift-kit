@@ -5,13 +5,15 @@ Last updated: 2026-04-30
 
 ## Current Slice
 
-Establish the first durable planning control plane for `codex-uplift-kit`.
+Establish the first durable planning control plane and workflow spine for
+`codex-uplift-kit`.
 
 ## Goal
 
-Create a small read-first surface that lets future agents understand current
-state, vision, roadmap, release boundaries, and artifact lifecycle before
-continuing v0.3 planning or implementation.
+Create a read-first surface that lets future agents understand current state,
+vision, roadmap, release boundaries, artifact lifecycle, workflow gates, role
+contracts, and decision-record expectations before continuing v0.3 planning or
+implementation.
 
 ## Write Set
 
@@ -25,6 +27,11 @@ Planned durable docs:
 - `.planning/current/RELEASE.md`
 - `.planning/governance/README.md`
 - `.planning/governance/artifact-lifecycle.md`
+- `.planning/governance/agent-workflow.md`
+- `.planning/governance/role-contracts.md`
+- `.planning/governance/workflow-gates.md`
+- `.planning/governance/decision-records.md`
+- `.planning/templates/`
 - project `AGENTS.md`
 
 Scratch docs under `.planning/work/_scratch/` remain temporary inputs until

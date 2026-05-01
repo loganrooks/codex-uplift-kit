@@ -13,13 +13,15 @@ summaries.
 
 - `artifact-lifecycle.md`: how artifacts gain, keep, lose, or never receive
   authority.
+- `agent-workflow.md`: default work loop from orientation through handoff.
+- `role-contracts.md`: bounded roles and output contracts for agent work.
+- `workflow-gates.md`: gate levels and verification by closure target.
+- `decision-records.md`: when and how to record durable decisions.
+- `../templates/`: reusable artifact shapes for work slices, evidence,
+  verification, decisions, and handoffs.
 
 Future docs should be added only when the repo needs them. Likely next docs:
 
-- `agent-workflow.md`
-- `decision-records.md`
-- `role-contracts.md`
-- `workflow-gates.md`
 - `release-policy.md`
 - `dogfooding-policy.md`
 
@@ -34,6 +36,8 @@ Future docs should be added only when the repo needs them. Likely next docs:
 - Keep active config, live installs, publish, tag, and release operations behind
   explicit user approval.
 - Prefer deterministic checks for structure and release gates.
+- Match process weight to closure target. Research, audit, decision, prototype,
+  pitch, migration, playtest, and release work need different evidence shapes.
 
 ## Role Discipline
 

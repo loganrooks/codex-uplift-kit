@@ -35,8 +35,30 @@ Then open only the archived or work-specific artifacts needed for the task.
 - `governance/README.md` explains the repo's operating rules.
 - `governance/artifact-lifecycle.md` defines when artifacts are current,
   scratch, work evidence, release evidence, or archive evidence.
+- `governance/agent-workflow.md` defines the default work loop for agents.
+- `governance/role-contracts.md` defines bounded responsibilities for reusable
+  agent roles.
+- `governance/workflow-gates.md` defines gate levels and closure-target-specific
+  verification.
+- `governance/decision-records.md` defines when durable decisions need records.
 
 Additional governance docs should be added only when a real workflow needs them.
+
+## Templates
+
+- `templates/work-slice.md` defines a bounded slice with closure target, write
+  set, gates, and stop conditions.
+- `templates/evidence-ledger.md` tracks source coverage, facts, inferences, and
+  gaps.
+- `templates/verification-note.md` records checks matched to the closure target.
+- `templates/decision-record.md` records durable decisions.
+- `templates/handoff.md` preserves continuation state across interruptions.
+
+## Decisions
+
+Use `decisions/` for durable decisions. Historical decisions still living in
+`.codex-uplift/` or old initiative docs should be promoted only when they remain
+current and useful.
 
 ## Artifact Authority
 

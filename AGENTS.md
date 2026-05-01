@@ -130,6 +130,8 @@ state that the test suite is not present.
 - For substantive project work, read `.planning/README.md`, then
   `.planning/current/STATE.md`, `.planning/current/ACTIVE_WORK.md`, and
   `.planning/governance/README.md`.
+- Follow `.planning/governance/agent-workflow.md` for the default work loop and
+  `.planning/governance/workflow-gates.md` for closure-target-specific gates.
 - Preserve design decisions and review responses under `.planning/`.
 - Separate implementation defects, setup-assistant requirements,
   platform-modeling corrections, and empirical unknowns.

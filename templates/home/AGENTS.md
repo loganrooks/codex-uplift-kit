@@ -18,6 +18,28 @@ This file defines durable personal defaults for Codex across repositories. Proje
 - Prefer small, reviewable slices over large mixed changes.
 - Use judgment for mechanical low-risk tasks; do not create ceremony for a typo fix.
 
+## Project shape and closure targets
+
+- Do not assume every project is a software release project.
+- Identify the project's current closure target before imposing workflow:
+  - research report;
+  - audit findings;
+  - decision memo;
+  - prototype;
+  - investor or stakeholder pitch;
+  - migration;
+  - experiment result;
+  - playtest build;
+  - shipped release.
+- Right-size planning to the closure target. A bounded research audit needs a
+  source map, evidence ledger, findings, and recommendation audit more than a
+  product roadmap. A long-horizon product needs durable vision, roadmap,
+  governance, active work, release or demo gates, and archive policy.
+- Treat roadmaps as useful for long-running or multi-slice work, not as a
+  universal requirement.
+- When the closure target is unclear, surface that uncertainty before building a
+  large process around the work.
+
 ## Epistemic discipline
 
 - Verify load-bearing claims from files, docs, source code, command output, or primary sources before relying on them.
@@ -72,6 +94,16 @@ This file defines durable personal defaults for Codex across repositories. Proje
 - Record verification commands and outcomes in the final response and, for substantive changes, in the durable artifact or commit message.
 - Prefer deterministic checks over visual inspection or intuition when a deterministic check exists.
 - For generated or materialized outputs, distinguish source-level verification from generated/runtime/materialized verification.
+- Match verification to the closure target:
+  - software changes need tests, lint/type/build checks, smoke checks, or manual
+    reproduction as appropriate;
+  - research work needs source coverage, quote/fact verification, uncertainty
+    accounting, and a findings review;
+  - audits need scoped evidence, severity/risk criteria, reproducible examples,
+    and clear recommendations;
+  - prototypes and demos need run instructions, smoke checks, and known
+    limitations;
+  - pitches need claim support, audience fit, and open-risk disclosure.
 
 ## Subagent authorization
 
