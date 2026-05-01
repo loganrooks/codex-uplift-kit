@@ -5,34 +5,20 @@ Last updated: 2026-04-30
 
 ## Current Slice
 
-Establish the first durable planning control plane and workflow spine for
-`codex-uplift-kit`.
+Prepare v0.3 Slice 1, the deterministic artifact authority checker, after
+establishing the planning control plane and workflow spine.
 
 ## Goal
 
-Create a read-first surface that lets future agents understand current state,
-vision, roadmap, release boundaries, artifact lifecycle, workflow gates, role
-contracts, and decision-record expectations before continuing v0.3 planning or
-implementation.
+Create an implementation-ready work package for `artifact check --json` so v0.3
+starts with a deterministic universal kernel instead of broad governance prose.
 
 ## Write Set
 
 Planned durable docs:
 
-- `.planning/README.md`
-- `.planning/current/STATE.md`
-- `.planning/current/VISION.md`
-- `.planning/current/ROADMAP.md`
+- `.planning/work/v0.3-slice-1-artifact-authority-check.md`
 - `.planning/current/ACTIVE_WORK.md`
-- `.planning/current/RELEASE.md`
-- `.planning/governance/README.md`
-- `.planning/governance/artifact-lifecycle.md`
-- `.planning/governance/agent-workflow.md`
-- `.planning/governance/role-contracts.md`
-- `.planning/governance/workflow-gates.md`
-- `.planning/governance/decision-records.md`
-- `.planning/templates/`
-- project `AGENTS.md`
 
 Scratch docs under `.planning/work/_scratch/` remain temporary inputs until
 their useful content has been promoted, then they should be deleted or archived
@@ -40,7 +26,7 @@ intentionally.
 
 ## Non-Goals
 
-- Do not implement v0.3 CLI features in this slice.
+- Do not implement v0.3 CLI features before the work package is reviewed.
 - Do not move or archive old planning suites yet.
 - Do not mutate live user `~/.codex`, `~/.agents`, or active config.
 - Do not bump versions, tag, publish, push release artifacts, or start a new
@@ -60,7 +46,8 @@ release docs change.
 
 After this slice, decide whether to:
 
-- commit the control-plane docs;
+- accept the v0.3 Slice 1 package as the next implementation scope;
+- choose whether `artifact check --json` defaults to inferred level or `minimal`
+  in v0.3 alpha;
 - delete or archive the scratch docs;
-- audit user-level and project-level `AGENTS.md`;
-- draft the formal v0.3 roadmap from these current docs.
+- implement v0.3 Slice 1.
